@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -90,6 +89,11 @@ function App() {
   
   const { toast } = useToast();
 
+  // Debug logging
+  useEffect(() => {
+    console.log('App state:', { userData, isLoginMode, email });
+  }, [userData, isLoginMode, email]);
+
   useEffect(() => {
     // Apply theme to document
     if (isDarkMode) {
@@ -123,6 +127,8 @@ function App() {
   };
 
   const handleLogin = async () => {
+    console.log('Login attempt started with email:', email);
+    
     if (!email || !password) {
       toast({
         title: translations[currentLanguage].missing_info,
@@ -136,13 +142,18 @@ function App() {
     
     // Simulate API call
     setTimeout(() => {
+      console.log('Checking credentials...');
+      
       // Check both mock database and localStorage
       let user = mockUserDatabase.find(u => u.email === email && u.password === password);
+      console.log('Mock database user found:', user);
       
       if (!user) {
         // Check localStorage users
         const storedUsers = JSON.parse(localStorage.getItem('serverUsers') || '[]');
+        console.log('Stored users:', storedUsers);
         user = storedUsers.find((u: any) => u.email === email && u.password === password);
+        console.log('LocalStorage user found:', user);
       }
       
       if (user) {
@@ -155,7 +166,9 @@ function App() {
           grade: user.grade || 'N/A'
         };
         
+        console.log('Setting userData to:', userDataToSet);
         setUserData(userDataToSet);
+        
         toast({
           title: translations[currentLanguage].login_successful,
           description: translations[currentLanguage].welcome_back_toast,
@@ -163,16 +176,16 @@ function App() {
         
         console.log('Login successful for:', userDataToSet);
       } else {
+        console.log('Login failed - no matching user found');
         toast({
           title: translations[currentLanguage].missing_info,
           description: translations[currentLanguage].invalid_credentials,
           variant: "destructive",
         });
-        console.log('Login failed for email:', email);
       }
       
       setIsLoading(false);
-    }, 2000);
+    }, 1000); // Reduced delay to 1 second
   };
 
   const handleRegistration = async () => {
@@ -216,10 +229,16 @@ function App() {
     }, 2000);
   };
 
+  // Debug: Log when we should show homepage
+  console.log('Should show homepage?', !!userData);
+  
   // If user is logged in, show homepage
   if (userData) {
+    console.log('Rendering ServerHomepage with userData:', userData);
     return <ServerHomepage userData={userData} />;
   }
+
+  console.log('Rendering login/registration form');
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-sky-200 via-green-100 to-amber-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-700">
@@ -241,6 +260,14 @@ function App() {
             <SelectItem value="en">EN</SelectItem>
           </SelectContent>
         </Select>
+      </div>
+
+      {/* Debug Info */}
+      <div className="fixed top-4 left-4 bg-white/90 dark:bg-gray-800/90 p-2 rounded text-xs z-10">
+        <p>Debug - Current State:</p>
+        <p>userData: {userData ? 'SET' : 'NULL'}</p>
+        <p>email: {email}</p>
+        <p>isLoading: {isLoading.toString()}</p>
       </div>
 
       {/* Main Content */}
