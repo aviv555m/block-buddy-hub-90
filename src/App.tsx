@@ -14,6 +14,8 @@ interface UserData {
   email: string;
   password: string;
   grade?: string;
+  fullName?: string;
+  minecraftNickname?: string;
 }
 
 // Translations object
@@ -49,23 +51,26 @@ const translations = {
 };
 
 // Mock user database with test admin
-const userDatabase = [
+const mockUserDatabase = [
   {
     email: 'student@school.edu',
     password: 'password123',
     minecraftUsername: 'TestPlayer',
+    fullName: 'Test Student',
     grade: '10th'
   },
   {
     email: 'admin@test.com',
     password: 'admin123',
     minecraftUsername: 'AdminUser',
+    fullName: 'Admin User',
     grade: 'Admin'
   },
   {
     email: 'avivm0900@gmail.com',
     password: 'admin123',
     minecraftUsername: 'MainAdmin',
+    fullName: 'Main Admin',
     grade: 'Admin'
   }
 ];
@@ -131,20 +136,39 @@ function App() {
     
     // Simulate API call
     setTimeout(() => {
-      const user = userDatabase.find(u => u.email === email && u.password === password);
+      // Check both mock database and localStorage
+      let user = mockUserDatabase.find(u => u.email === email && u.password === password);
+      
+      if (!user) {
+        // Check localStorage users
+        const storedUsers = JSON.parse(localStorage.getItem('serverUsers') || '[]');
+        user = storedUsers.find((u: any) => u.email === email && u.password === password);
+      }
       
       if (user) {
-        setUserData(user);
+        // Ensure user data has all required fields
+        const userDataToSet = {
+          email: user.email,
+          password: user.password,
+          minecraftUsername: user.minecraftUsername || user.minecraftNickname || user.email.split('@')[0],
+          fullName: user.fullName || 'User',
+          grade: user.grade || 'N/A'
+        };
+        
+        setUserData(userDataToSet);
         toast({
           title: translations[currentLanguage].login_successful,
           description: translations[currentLanguage].welcome_back_toast,
         });
+        
+        console.log('Login successful for:', userDataToSet);
       } else {
         toast({
           title: translations[currentLanguage].missing_info,
           description: translations[currentLanguage].invalid_credentials,
           variant: "destructive",
         });
+        console.log('Login failed for email:', email);
       }
       
       setIsLoading(false);
@@ -166,13 +190,20 @@ function App() {
     // Simulate API call
     setTimeout(() => {
       const newUser = {
-        minecraftUsername,
         email,
         password,
-        grade
+        minecraftUsername: minecraftUsername,
+        fullName: minecraftUsername, // Use minecraft username as full name for now
+        grade: grade || 'N/A',
+        registeredAt: new Date().toISOString(),
+        id: Date.now().toString()
       };
       
-      userDatabase.push(newUser);
+      // Store in localStorage
+      const existingUsers = JSON.parse(localStorage.getItem('serverUsers') || '[]');
+      existingUsers.push(newUser);
+      localStorage.setItem('serverUsers', JSON.stringify(existingUsers));
+      
       setUserData(newUser);
       
       toast({
@@ -180,6 +211,7 @@ function App() {
         description: translations[currentLanguage].welcome_message_toast,
       });
       
+      console.log('Registration successful for:', newUser);
       setIsLoading(false);
     }, 2000);
   };
@@ -227,9 +259,9 @@ function App() {
             
             {/* Test Admin Credentials */}
             <div className="mt-4 p-3 bg-yellow-100 dark:bg-yellow-900 rounded-lg text-xs">
-              <p className="font-bold text-yellow-800 dark:text-yellow-200">Test Admin Account:</p>
-              <p className="text-yellow-700 dark:text-yellow-300">Email: admin@test.com</p>
-              <p className="text-yellow-700 dark:text-yellow-300">Password: admin123</p>
+              <p className="font-bold text-yellow-800 dark:text-yellow-200">Test Credentials:</p>
+              <p className="text-yellow-700 dark:text-yellow-300">Admin: admin@test.com / admin123</p>
+              <p className="text-yellow-700 dark:text-yellow-300">Student: student@school.edu / password123</p>
             </div>
           </CardHeader>
           

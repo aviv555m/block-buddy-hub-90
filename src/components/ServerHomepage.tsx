@@ -15,7 +15,7 @@ const ServerHomepage = ({ userData }: ServerHomepageProps) => {
   const [showAdminPanel, setShowAdminPanel] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [serverSettings, setServerSettings] = useState({
-    serverIP: 'schoolcraft.example.com',
+    serverIP: 'mode-pichunter.joinmc.link',
     discordLink: 'https://discord.gg/schoolcraft',
     rules: [
       { num: 1, rule: "🏠 No griefing or destroying other players' builds" },
@@ -96,6 +96,20 @@ const ServerHomepage = ({ userData }: ServerHomepageProps) => {
     }
   };
 
+  const handleAdminPanelAccess = () => {
+    // Check if user has admin email before allowing access
+    const adminEmails = ['avivm0900@gmail.com', 'admin@test.com'];
+    if (adminEmails.includes(userData.email)) {
+      setShowAdminPanel(true);
+    } else {
+      toast({
+        title: "Access Denied",
+        description: "You don't have admin permissions to access this panel.",
+        variant: "destructive",
+      });
+    }
+  };
+
   const handleAdminLogout = () => {
     setShowAdminPanel(false);
   };
@@ -119,10 +133,10 @@ const ServerHomepage = ({ userData }: ServerHomepageProps) => {
               <div className="w-8 h-8 bg-white rounded-sm"></div>
             </div>
             <CardTitle className="text-3xl font-bold text-gray-800 dark:text-white">
-              Welcome to SchoolCraft Server!
+              Welcome to PicHunter Server!
             </CardTitle>
             <CardDescription className="text-lg text-gray-600 dark:text-gray-300">
-              Hey {userData.minecraftUsername || userData.email}! Ready to build and learn together?
+              Hey {userData.minecraftUsername || userData.fullName || userData.email}! Ready to build and learn together?
               {isAdmin && (
                 <div className="mt-2">
                   <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-100">
@@ -137,20 +151,22 @@ const ServerHomepage = ({ userData }: ServerHomepageProps) => {
             <div className="mt-4 p-2 bg-gray-100 dark:bg-gray-700 rounded text-xs">
               <p>Debug: Email: {userData.email}</p>
               <p>Debug: Is Admin: {isAdmin.toString()}</p>
+              <p>Debug: Username: {userData.minecraftUsername || userData.fullName}</p>
             </div>
             
-            {/* Admin Panel Button */}
-            {isAdmin && (
-              <div className="mt-4">
-                <Button 
-                  onClick={() => setShowAdminPanel(true)}
-                  className="bg-red-500 hover:bg-red-600 text-white font-bold"
-                >
-                  <Settings className="mr-2" size={16} />
-                  Admin Panel
-                </Button>
-              </div>
-            )}
+            {/* Admin Panel Button - Now visible to everyone */}
+            <div className="mt-4">
+              <Button 
+                onClick={handleAdminPanelAccess}
+                className="bg-red-500 hover:bg-red-600 text-white font-bold"
+              >
+                <Settings className="mr-2" size={16} />
+                Admin Panel
+              </Button>
+              <p className="text-xs text-gray-500 mt-1">
+                {isAdmin ? "You have admin access" : "Admin access required"}
+              </p>
+            </div>
           </CardHeader>
         </Card>
 
