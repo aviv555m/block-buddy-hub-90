@@ -150,7 +150,7 @@ function App() {
         const userDataToSet = {
           email: user.email,
           password: user.password,
-          minecraftUsername: user.minecraftUsername || user.minecraftNickname || user.email.split('@')[0],
+          minecraftUsername: user.minecraftUsername || user.email.split('@')[0],
           fullName: user.fullName || 'User',
           grade: user.grade || 'N/A'
         };
