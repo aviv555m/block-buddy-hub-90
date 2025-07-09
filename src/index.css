@@ -1,0 +1,181 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Orbitron:wght@400;700;900&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    --background: 135 50% 95%;
+    --foreground: 0 0% 10%;
+
+    --card: 120 30% 92%;
+    --card-foreground: 0 0% 15%;
+
+    --popover: 120 30% 98%;
+    --popover-foreground: 0 0% 10%;
+
+    --primary: 122 39% 49%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 30 20% 70%;
+    --secondary-foreground: 0 0% 15%;
+
+    --muted: 120 20% 88%;
+    --muted-foreground: 0 0% 45%;
+
+    --accent: 197 100% 64%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 4 90% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 120 15% 80%;
+    --input: 120 15% 85%;
+    --ring: 122 39% 49%;
+
+    --radius: 0.25rem;
+
+    /* Minecraft themed colors */
+    --minecraft-grass: 124 52% 48%;
+    --minecraft-dirt: 30 45% 35%;
+    --minecraft-sky: 197 100% 64%;
+    --minecraft-emerald: 140 100% 50%;
+    --minecraft-dark: 0 0% 20%;
+
+    --sidebar-background: 120 30% 95%;
+    --sidebar-foreground: 0 0% 20%;
+    --sidebar-primary: 122 39% 49%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 120 20% 88%;
+    --sidebar-accent-foreground: 0 0% 20%;
+    --sidebar-border: 120 15% 80%;
+    --sidebar-ring: 122 39% 49%;
+  }
+
+  .dark {
+    --background: 0 0% 8%;
+    --foreground: 0 0% 95%;
+
+    --card: 0 0% 12%;
+    --card-foreground: 0 0% 95%;
+
+    --popover: 0 0% 8%;
+    --popover-foreground: 0 0% 95%;
+
+    --primary: 122 39% 49%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 30 20% 25%;
+    --secondary-foreground: 0 0% 85%;
+
+    --muted: 0 0% 18%;
+    --muted-foreground: 0 0% 60%;
+
+    --accent: 197 100% 64%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 4 90% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
+    --ring: 122 39% 49%;
+
+    --sidebar-background: 0 0% 8%;
+    --sidebar-foreground: 0 0% 85%;
+    --sidebar-primary: 122 39% 49%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 0 0% 18%;
+    --sidebar-accent-foreground: 0 0% 85%;
+    --sidebar-border: 0 0% 20%;
+    --sidebar-ring: 122 39% 49%;
+  }
+
+  /* Minecraft color utilities */
+  .minecraft-grass {
+    background-color: hsl(var(--minecraft-grass));
+  }
+  
+  .minecraft-dirt {
+    background-color: hsl(var(--minecraft-dirt));
+  }
+  
+  .minecraft-sky {
+    background-color: hsl(var(--minecraft-sky));
+  }
+  
+  .minecraft-emerald {
+    background-color: hsl(var(--minecraft-emerald));
+  }
+  
+  .minecraft-dark {
+    color: hsl(var(--minecraft-dark));
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-gradient-to-br from-minecraft-sky via-minecraft-grass/20 to-minecraft-dirt/20 text-foreground min-h-screen;
+    background-attachment: fixed;
+  }
+
+  .minecraft-block {
+    background: linear-gradient(135deg, 
+      rgba(124, 179, 66, 0.9) 0%, 
+      rgba(124, 179, 66, 1) 50%, 
+      rgba(104, 159, 46, 1) 100%);
+    border: 2px solid rgba(104, 159, 46, 1);
+    box-shadow: 
+      inset 2px 2px 4px rgba(144, 199, 86, 0.8),
+      inset -2px -2px 4px rgba(84, 139, 26, 0.8),
+      0 4px 8px rgba(0, 0, 0, 0.3);
+  }
+
+  .minecraft-button {
+    @apply minecraft-block text-white font-minecraft text-sm px-6 py-3 transition-all duration-200 hover:scale-105 active:scale-95;
+  }
+
+  .pixel-border {
+    border-image: url("data:image/svg+xml,%3csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='m0 0h8v8h-8v-8zm92 0h8v8h-8v-8zm0 92h8v8h-8v-8zm-92 0h8v8h-8v-8z' fill='%23666'/%3e%3c/svg%3e") 8 repeat;
+  }
+
+  /* Font utilities */
+  .font-minecraft {
+    font-family: 'Press Start 2P', monospace;
+  }
+  
+  .font-pixel {
+    font-family: 'Orbitron', monospace;
+  }
+}
+
+.floating-animation {
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { 
+    box-shadow: 0 0 5px rgba(124, 179, 66, 0.5);
+  }
+  50% { 
+    box-shadow: 0 0 20px rgba(124, 179, 66, 0.8), 0 0 30px rgba(124, 179, 66, 0.6);
+  }
+}
