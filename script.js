@@ -1,4 +1,3 @@
-
 // Translations
 const translations = {
     en: {
@@ -223,7 +222,7 @@ let currentPlayers = 12;
 let maxPlayers = 50;
 let isLoginMode = false;
 
-// Mock user database (in real app, this would be server-side)
+// Mock user database (used only for registration simulation)
 let userDatabase = [
     {
         email: 'student@school.edu',
@@ -371,92 +370,75 @@ function setTheme(theme) {
     const themeIcon = document.getElementById('theme-icon');
     
     if (theme === 'dark') {
-        body.setAttribute('data-theme', 'dark');
-        themeIcon.textContent = '☀️';
-    } else {
-        body.setAttribute('data-theme', 'light');
+        body.classList.add('dark-theme');
         themeIcon.textContent = '🌙';
+    } else {
+        body.classList.remove('dark-theme');
+        themeIcon.textContent = '☀️';
     }
     
     localStorage.setItem('preferred-theme', theme);
 }
 
 function toggleTheme() {
-    const currentTheme = document.body.getAttribute('data-theme');
+    const body = document.body;
+    const currentTheme = body.classList.contains('dark-theme') ? 'dark' : 'light';
     const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
     setTheme(newTheme);
 }
 
-function handleAuth(e) {
-    e.preventDefault();
+function updateServerStatus() {
+    // Here you might call a real API to get current players and status
+    // For now, we'll simulate:
+    const onlinePlayersElement = document.getElementById('players-online');
+    const serverStatusElement = document.getElementById('server-status');
+    const lastUpdatedElement = document.getElementById('last-updated');
     
+    // Simulate player count changing
+    currentPlayers = Math.min(maxPlayers, Math.max(0, currentPlayers + (Math.random() > 0.5 ? 1 : -1)));
+    
+    if (onlinePlayersElement) {
+        onlinePlayersElement.textContent = `${currentPlayers} / ${maxPlayers}`;
+    }
+    
+    if (serverStatusElement) {
+        serverStatusElement.textContent = translations[currentLanguage].online;
+        serverStatusElement.classList.add('online');
+        serverStatusElement.classList.remove('offline');
+    }
+    
+    if (lastUpdatedElement) {
+        lastUpdatedElement.textContent = new Date().toLocaleTimeString();
+    }
+}
+
+// Copy server IP to clipboard
+function copyServerIP() {
+    const ip = 'mc.schoolcraft.edu';
+    navigator.clipboard.writeText(ip).then(() => {
+        showToast(translations[currentLanguage].server_ip_copied, translations[currentLanguage].ip_copied_desc, 'success');
+    });
+}
+
+// Toast notification
+function showToast(title, message, type) {
+    const toast = document.getElementById('toast');
+    toast.className = 'toast ' + type;
+    toast.querySelector('strong').textContent = title;
+    toast.querySelector('p').textContent = message;
+    toast.style.display = 'block';
+    setTimeout(() => {
+        toast.style.display = 'none';
+    }, 4000);
+}
+
+function handleAuth(event) {
+    event.preventDefault();
     if (isLoginMode) {
         handleLogin();
     } else {
         handleRegistration();
     }
-}
-
-function handleLogin() {
-    const email = document.getElementById('email').value.trim();
-    const password = document.getElementById('password').value.trim();
-    
-    console.log('Login attempt:', { email, password: password ? '***' : 'empty' });
-    console.log('User database:', userDatabase);
-    
-    if (!email || !password) {
-        console.log('Missing credentials');
-        showToast(
-            translations[currentLanguage].missing_info,
-            translations[currentLanguage].fill_login_required,
-            'error'
-        );
-        return;
-    }
-    
-    // Show loading state
-    const submitBtn = document.getElementById('submit-btn');
-    const originalText = submitBtn.innerHTML;
-    submitBtn.innerHTML = `<span>${translations[currentLanguage].signing_in}</span>`;
-    submitBtn.disabled = true;
-    
-    // Simulate login process
-    setTimeout(() => {
-        // Check if user exists in mock database
-        const user = userDatabase.find(u => {
-            console.log('Checking user:', u.email, 'against:', email);
-            console.log('Password match:', u.password === password);
-            return u.email === email && u.password === password;
-        });
-        
-        console.log('Found user:', user);
-        
-        if (user) {
-            userData = user;
-            console.log('Login successful, userData set to:', userData);
-            
-            showToast(
-                translations[currentLanguage].login_successful,
-                translations[currentLanguage].welcome_back_toast,
-                'success'
-            );
-            
-            // Show homepage after a short delay
-            setTimeout(() => {
-                showHomepage();
-            }, 1500);
-        } else {
-            console.log('Login failed - invalid credentials');
-            showToast(
-                translations[currentLanguage].missing_info,
-                translations[currentLanguage].invalid_credentials,
-                'error'
-            );
-        }
-        
-        submitBtn.innerHTML = originalText;
-        submitBtn.disabled = false;
-    }, 2000);
 }
 
 function handleRegistration() {
@@ -492,6 +474,35 @@ function handleRegistration() {
         userDatabase.push(newUser);
         userData = newUser;
         
+        // --- New code: Send data to SheetDB API ---
+        fetch('https://sheetdb.io/api/v1/6nrlyxofsg4sa', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                data: {
+                    MinecraftUsername: minecraftUsername,
+                    Email: email,
+                    Password: password,
+                    Grade: grade || ''
+                }
+            })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to save user data');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('User saved to SheetDB:', data);
+        })
+        .catch(error => {
+            console.error('Error saving to SheetDB:', error);
+        });
+        // --- End new code ---
+        
         showToast(
             translations[currentLanguage].registration_successful,
             translations[currentLanguage].welcome_message_toast,
@@ -508,97 +519,88 @@ function handleRegistration() {
     }, 2000);
 }
 
-function showHomepage() {
-    document.getElementById('registration-form').style.display = 'none';
-    document.getElementById('server-homepage').style.display = 'block';
+function handleLogin() {
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value.trim();
     
-    // Update username display
-    document.getElementById('username-display').textContent = userData.minecraftUsername;
-    
-    // Setup homepage event listeners if not already set
-    const copyIpBtn = document.getElementById('copy-ip');
-    if (copyIpBtn && !copyIpBtn.hasAttribute('data-listener')) {
-        copyIpBtn.addEventListener('click', copyServerIP);
-        copyIpBtn.setAttribute('data-listener', 'true');
-    }
-    
-    const discordBtn = document.getElementById('discord-btn');
-    if (discordBtn && !discordBtn.hasAttribute('data-listener')) {
-        discordBtn.addEventListener('click', function() {
-            window.open('https://discord.gg/schoolcraft', '_blank');
-        });
-        discordBtn.setAttribute('data-listener', 'true');
-    }
-}
-
-function copyServerIP() {
-    const serverIP = 'schoolcraft.example.com';
-    
-    navigator.clipboard.writeText(serverIP).then(() => {
+    if (!email || !password) {
         showToast(
-            translations[currentLanguage].server_ip_copied,
-            translations[currentLanguage].ip_copied_desc,
-            'success'
+            translations[currentLanguage].missing_info,
+            translations[currentLanguage].fill_login_required,
+            'error'
         );
-    }).catch(() => {
-        // Fallback for older browsers
-        const textArea = document.createElement('textarea');
-        textArea.value = serverIP;
-        document.body.appendChild(textArea);
-        textArea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textArea);
+        return;
+    }
+    
+    const submitBtn = document.getElementById('submit-btn');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = `<span>${translations[currentLanguage].signing_in}</span>`;
+    submitBtn.disabled = true;
+    
+    // Check credentials against SheetDB API
+    fetch('https://sheetdb.io/api/v1/6nrlyxofsg4sa')
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Failed to fetch user data');
+        }
+        return response.json();
+    })
+    .then(users => {
+        // users is an array of user objects
+        const foundUser = users.find(user => 
+            user.Email.toLowerCase() === email.toLowerCase() &&
+            user.Password === password
+        );
         
+        if (foundUser) {
+            userData = foundUser;
+            showToast(
+                translations[currentLanguage].login_successful,
+                translations[currentLanguage].welcome_back_toast,
+                'success'
+            );
+            setTimeout(() => {
+                showHomepage();
+            }, 1500);
+        } else {
+            showToast(
+                translations[currentLanguage].invalid_credentials,
+                '',
+                'error'
+            );
+        }
+    })
+    .catch(error => {
+        console.error('Login error:', error);
         showToast(
-            translations[currentLanguage].server_ip_copied,
-            translations[currentLanguage].ip_copied_desc,
-            'success'
+            'Error',
+            'Unable to login at this time. Please try again later.',
+            'error'
         );
+    })
+    .finally(() => {
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
     });
 }
 
-function updateServerStatus() {
-    // Simulate server status updates
-    currentPlayers = Math.floor(Math.random() * 25) + 5;
+function showHomepage() {
+    // Hide auth form and show homepage content
+    document.getElementById('auth-container').style.display = 'none';
+    document.getElementById('homepage-container').style.display = 'block';
     
-    const currentPlayersEl = document.getElementById('current-players');
-    const progressEl = document.getElementById('player-progress');
-    const lastUpdateEl = document.getElementById('last-update-time');
+    // Display welcome message
+    const welcomeTitle = document.getElementById('welcome-title');
+    const welcomeMsg = document.getElementById('welcome-message');
     
-    if (currentPlayersEl) {
-        currentPlayersEl.textContent = currentPlayers;
-    }
+    welcomeTitle.textContent = translations[currentLanguage].welcome_title;
+    welcomeMsg.textContent = `${translations[currentLanguage].welcome_message} ${userData.minecraftUsername || userData.MinecraftUsername || ''}! ${translations[currentLanguage].ready_to_build}`;
     
-    if (progressEl) {
-        const percentage = (currentPlayers / maxPlayers) * 100;
-        progressEl.style.width = `${percentage}%`;
-    }
-    
-    if (lastUpdateEl) {
-        lastUpdateEl.textContent = new Date().toLocaleTimeString();
-    }
+    // Display server IP and status info (already updated periodically)
 }
 
-function showToast(title, message, type = 'success') {
-    const container = document.getElementById('toast-container');
-    
-    const toast = document.createElement('div');
-    toast.className = `toast ${type}`;
-    toast.innerHTML = `
-        <div style="font-weight: bold; margin-bottom: 4px;">${title}</div>
-        <div style="font-size: 0.9em; opacity: 0.9;">${message}</div>
-    `;
-    
-    container.appendChild(toast);
-    
-    // Remove toast after 4 seconds
-    setTimeout(() => {
-        toast.style.opacity = '0';
-        toast.style.transform = 'translateX(-50%) translateY(-20px)';
-        setTimeout(() => {
-            if (container.contains(toast)) {
-                container.removeChild(toast);
-            }
-        }, 300);
-    }, 4000);
-}
+// Initialize form mode and translations on page load
+document.addEventListener('DOMContentLoaded', () => {
+    updateFormMode();
+    updateTranslations();
+});
