@@ -441,7 +441,25 @@ function handleAuth(event) {
     }
 }
 
-function handleRegistration() {
+async function checkUserExists(email, minecraftUsername) {
+    try {
+        const response = await fetch('https://sheetdb.io/api/v1/6nrlyxofsg4sa');
+        if (!response.ok) {
+            throw new Error('Failed to fetch users for duplication check');
+        }
+        const users = await response.json();
+        return users.some(user => 
+            user.Email.toLowerCase() === email.toLowerCase() || 
+            user.MinecraftUsername.toLowerCase() === minecraftUsername.toLowerCase()
+        );
+    } catch (error) {
+        console.error('Error checking user existence:', error);
+        // Assume user does not exist if check fails (to not block registration)
+        return false;
+    }
+}
+
+async function handleRegistration() {
     const minecraftUsername = document.getElementById('minecraft-username').value.trim();
     const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value.trim();
@@ -456,26 +474,38 @@ function handleRegistration() {
         return;
     }
     
-    // Show loading state
     const submitBtn = document.getElementById('submit-btn');
     const originalText = submitBtn.innerHTML;
     submitBtn.innerHTML = `<span>${translations[currentLanguage].creating_account}</span>`;
     submitBtn.disabled = true;
     
-    // Simulate registration process
-    setTimeout(() => {
-        // Add user to mock database
-        const newUser = {
-            minecraftUsername,
-            email,
-            password,
-            grade
-        };
-        userDatabase.push(newUser);
-        userData = newUser;
-        
-        // --- New code: Send data to SheetDB API ---
-        fetch('https://sheetdb.io/api/v1/6nrlyxofsg4sa', {
+    // Check if user already exists
+    const exists = await checkUserExists(email, minecraftUsername);
+    if (exists) {
+        showToast(
+            translations[currentLanguage].user_exists,
+            '',
+            'error'
+        );
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+        return;
+    }
+    
+    // Proceed to register
+    const newUser = {
+        minecraftUsername,
+        email,
+        password,
+        grade
+    };
+    
+    // Add to local mock DB
+    userDatabase.push(newUser);
+    userData = newUser;
+    
+    try {
+        const response = await fetch('https://sheetdb.io/api/v1/6nrlyxofsg4sa', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -488,38 +518,41 @@ function handleRegistration() {
                     Grade: grade || ''
                 }
             })
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Failed to save user data');
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log('User saved to SheetDB:', data);
-        })
-        .catch(error => {
-            console.error('Error saving to SheetDB:', error);
         });
-        // --- End new code ---
-        
-        showToast(
-            translations[currentLanguage].registration_successful,
-            translations[currentLanguage].welcome_message_toast,
-            'success'
-        );
-        
-        // Show homepage after a short delay
-        setTimeout(() => {
-            showHomepage();
-        }, 1500);
-        
+        if (!response.ok) throw new Error('Failed to save user data');
+        const data = await response.json();
+        console.log('User saved to SheetDB:', data);
+    } catch (error) {
+        console.error('Error saving to SheetDB:', error);
+        showToast('Error', 'Failed to save user data. Please try again later.', 'error');
         submitBtn.innerHTML = originalText;
         submitBtn.disabled = false;
-    }, 2000);
+        return;
+    }
+    
+    showToast(
+        translations[currentLanguage].registration_successful,
+        translations[currentLanguage].welcome_message_toast,
+        'success'
+    );
+    
+    // Switch to login mode automatically after successful registration
+    setTimeout(() => {
+        toggleMode(); // Switch to login mode
+        clearFormFields();
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+    }, 1500);
 }
 
-function handleLogin() {
+function clearFormFields() {
+    document.getElementById('minecraft-username').value = '';
+    document.getElementById('email').value = '';
+    document.getElementById('password').value = '';
+    document.getElementById('grade').value = '';
+}
+
+async function handleLogin() {
     const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value.trim();
     
@@ -537,16 +570,11 @@ function handleLogin() {
     submitBtn.innerHTML = `<span>${translations[currentLanguage].signing_in}</span>`;
     submitBtn.disabled = true;
     
-    // Check credentials against SheetDB API
-    fetch('https://sheetdb.io/api/v1/6nrlyxofsg4sa')
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Failed to fetch user data');
-        }
-        return response.json();
-    })
-    .then(users => {
-        // users is an array of user objects
+    try {
+        const response = await fetch('https://sheetdb.io/api/v1/6nrlyxofsg4sa');
+        if (!response.ok) throw new Error('Failed to fetch user data');
+        const users = await response.json();
+        
         const foundUser = users.find(user => 
             user.Email.toLowerCase() === email.toLowerCase() &&
             user.Password === password
@@ -569,19 +597,17 @@ function handleLogin() {
                 'error'
             );
         }
-    })
-    .catch(error => {
+    } catch (error) {
         console.error('Login error:', error);
         showToast(
             'Error',
             'Unable to login at this time. Please try again later.',
             'error'
         );
-    })
-    .finally(() => {
+    } finally {
         submitBtn.innerHTML = originalText;
         submitBtn.disabled = false;
-    });
+    }
 }
 
 function showHomepage() {
