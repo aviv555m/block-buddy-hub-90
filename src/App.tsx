@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -6,15 +7,19 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { Copy, Users, Clock, MessageCircle, Shield, BookOpen, Moon, Sun } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { User, Session } from '@supabase/supabase-js';
 import ServerHomepage from '@/components/ServerHomepage';
 
-interface UserData {
-  minecraftUsername?: string;
+interface UserProfile {
+  id: string;
   email: string;
-  password: string;
+  minecraft_username?: string;
+  full_name?: string;
   grade?: string;
-  fullName?: string;
-  minecraftNickname?: string;
+  is_admin: boolean;
+  created_at: string;
+  updated_at: string;
 }
 
 // Translations object
@@ -49,36 +54,13 @@ const translations = {
   }
 };
 
-// Mock user database with test admin
-const mockUserDatabase = [
-  {
-    email: 'student@school.edu',
-    password: 'password123',
-    minecraftUsername: 'TestPlayer',
-    fullName: 'Test Student',
-    grade: '10th'
-  },
-  {
-    email: 'admin@test.com',
-    password: 'admin123',
-    minecraftUsername: 'AdminUser',
-    fullName: 'Admin User',
-    grade: 'Admin'
-  },
-  {
-    email: 'avivm0900@gmail.com',
-    password: 'admin123',
-    minecraftUsername: 'MainAdmin',
-    fullName: 'Main Admin',
-    grade: 'Admin'
-  }
-];
-
 function App() {
   const [currentLanguage, setCurrentLanguage] = useState<'en'>('en');
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isLoginMode, setIsLoginMode] = useState(false);
-  const [userData, setUserData] = useState<UserData | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   
   // Form state
@@ -89,10 +71,57 @@ function App() {
   
   const { toast } = useToast();
 
-  // Debug logging
+  // Set up auth state listener and check for existing session
   useEffect(() => {
-    console.log('App state:', { userData, isLoginMode, email });
-  }, [userData, isLoginMode, email]);
+    // Set up auth state listener FIRST
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        console.log('Auth state changed:', event, session?.user?.email);
+        setSession(session);
+        setUser(session?.user ?? null);
+        
+        // Fetch user profile when user logs in
+        if (session?.user) {
+          setTimeout(() => {
+            fetchUserProfile(session.user.id);
+          }, 0);
+        } else {
+          setUserProfile(null);
+        }
+      }
+    );
+
+    // THEN check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      if (session?.user) {
+        fetchUserProfile(session.user.id);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const fetchUserProfile = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+
+      if (error) {
+        console.error('Error fetching profile:', error);
+        return;
+      }
+
+      setUserProfile(data);
+      console.log('User profile loaded:', data);
+    } catch (error) {
+      console.error('Error fetching profile:', error);
+    }
+  };
 
   useEffect(() => {
     // Apply theme to document
@@ -140,52 +169,36 @@ function App() {
 
     setIsLoading(true);
     
-    // Simulate API call
-    setTimeout(() => {
-      console.log('Checking credentials...');
-      
-      // Check both mock database and localStorage
-      let user = mockUserDatabase.find(u => u.email === email && u.password === password);
-      console.log('Mock database user found:', user);
-      
-      if (!user) {
-        // Check localStorage users
-        const storedUsers = JSON.parse(localStorage.getItem('serverUsers') || '[]');
-        console.log('Stored users:', storedUsers);
-        user = storedUsers.find((u: any) => u.email === email && u.password === password);
-        console.log('LocalStorage user found:', user);
-      }
-      
-      if (user) {
-        // Ensure user data has all required fields
-        const userDataToSet = {
-          email: user.email,
-          password: user.password,
-          minecraftUsername: user.minecraftUsername || user.email.split('@')[0],
-          fullName: user.fullName || 'User',
-          grade: user.grade || 'N/A'
-        };
-        
-        console.log('Setting userData to:', userDataToSet);
-        setUserData(userDataToSet);
-        
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: email,
+        password: password,
+      });
+
+      if (error) {
+        console.error('Login error:', error);
+        toast({
+          title: translations[currentLanguage].missing_info,
+          description: error.message || translations[currentLanguage].invalid_credentials,
+          variant: "destructive",
+        });
+      } else if (data.user) {
         toast({
           title: translations[currentLanguage].login_successful,
           description: translations[currentLanguage].welcome_back_toast,
         });
-        
-        console.log('Login successful for:', userDataToSet);
-      } else {
-        console.log('Login failed - no matching user found');
-        toast({
-          title: translations[currentLanguage].missing_info,
-          description: translations[currentLanguage].invalid_credentials,
-          variant: "destructive",
-        });
+        console.log('Login successful for:', data.user.email);
       }
-      
+    } catch (error) {
+      console.error('Login error:', error);
+      toast({
+        title: "Login Error",
+        description: "An unexpected error occurred during login.",
+        variant: "destructive",
+      });
+    } finally {
       setIsLoading(false);
-    }, 1000); // Reduced delay to 1 second
+    }
   };
 
   const handleRegistration = async () => {
@@ -200,41 +213,59 @@ function App() {
 
     setIsLoading(true);
     
-    // Simulate API call
-    setTimeout(() => {
-      const newUser = {
-        email,
-        password,
-        minecraftUsername: minecraftUsername,
-        fullName: minecraftUsername, // Use minecraft username as full name for now
-        grade: grade || 'N/A',
-        registeredAt: new Date().toISOString(),
-        id: Date.now().toString()
-      };
+    try {
+      const redirectUrl = `${window.location.origin}/`;
       
-      // Store in localStorage
-      const existingUsers = JSON.parse(localStorage.getItem('serverUsers') || '[]');
-      existingUsers.push(newUser);
-      localStorage.setItem('serverUsers', JSON.stringify(existingUsers));
-      
-      setUserData(newUser);
-      
-      toast({
-        title: translations[currentLanguage].registration_successful,
-        description: translations[currentLanguage].welcome_message_toast,
+      const { data, error } = await supabase.auth.signUp({
+        email: email,
+        password: password,
+        options: {
+          emailRedirectTo: redirectUrl,
+          data: {
+            minecraft_username: minecraftUsername,
+            full_name: minecraftUsername, // Use minecraft username as full name
+            grade: grade || 'N/A'
+          }
+        }
       });
-      
-      console.log('Registration successful for:', newUser);
+
+      if (error) {
+        console.error('Registration error:', error);
+        toast({
+          title: "Registration Error",
+          description: error.message,
+          variant: "destructive",
+        });
+      } else if (data.user) {
+        toast({
+          title: translations[currentLanguage].registration_successful,
+          description: translations[currentLanguage].welcome_message_toast,
+        });
+        console.log('Registration successful for:', data.user.email);
+      }
+    } catch (error) {
+      console.error('Registration error:', error);
+      toast({
+        title: "Registration Error",
+        description: "An unexpected error occurred during registration.",
+        variant: "destructive",
+      });
+    } finally {
       setIsLoading(false);
-    }, 2000);
+    }
   };
 
-  // Debug: Log when we should show homepage
-  console.log('Should show homepage?', !!userData);
-  
-  // If user is logged in, show homepage
-  if (userData) {
-    console.log('Rendering ServerHomepage with userData:', userData);
+  // If user is logged in and profile is loaded, show homepage
+  if (user && userProfile) {
+    console.log('Rendering ServerHomepage with user profile:', userProfile);
+    const userData = {
+      email: userProfile.email,
+      password: '', // Don't pass password to homepage
+      minecraftUsername: userProfile.minecraft_username || userProfile.email.split('@')[0],
+      fullName: userProfile.full_name || userProfile.minecraft_username || 'User',
+      grade: userProfile.grade || 'N/A',
+      isAdmin: userProfile.is_admin
+    };
     return <ServerHomepage userData={userData} />;
   }
 
@@ -265,7 +296,8 @@ function App() {
       {/* Debug Info */}
       <div className="fixed top-4 left-4 bg-white/90 dark:bg-gray-800/90 p-2 rounded text-xs z-10">
         <p>Debug - Current State:</p>
-        <p>userData: {userData ? 'SET' : 'NULL'}</p>
+        <p>user: {user ? 'LOGGED IN' : 'NULL'}</p>
+        <p>profile: {userProfile ? 'LOADED' : 'NULL'}</p>
         <p>email: {email}</p>
         <p>isLoading: {isLoading.toString()}</p>
       </div>
@@ -288,7 +320,7 @@ function App() {
             <div className="mt-4 p-3 bg-yellow-100 dark:bg-yellow-900 rounded-lg text-xs">
               <p className="font-bold text-yellow-800 dark:text-yellow-200">Test Credentials:</p>
               <p className="text-yellow-700 dark:text-yellow-300">Admin: admin@test.com / admin123</p>
-              <p className="text-yellow-700 dark:text-yellow-300">Student: student@school.edu / password123</p>
+              <p className="text-yellow-700 dark:text-yellow-300">Main Admin: avivm0900@gmail.com / admin123</p>
             </div>
           </CardHeader>
           

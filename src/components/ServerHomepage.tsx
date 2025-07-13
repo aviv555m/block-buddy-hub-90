@@ -3,7 +3,8 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { Copy, Users, Clock, MessageCircle, Shield, BookOpen, Settings } from 'lucide-react';
+import { Copy, Users, Clock, MessageCircle, Shield, BookOpen, Settings, LogOut } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 import AdminPanel from './AdminPanel';
 
 interface ServerHomepageProps {
@@ -13,7 +14,6 @@ interface ServerHomepageProps {
 const ServerHomepage = ({ userData }: ServerHomepageProps) => {
   const [onlineCount, setOnlineCount] = useState(12);
   const [showAdminPanel, setShowAdminPanel] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
   const [serverSettings, setServerSettings] = useState({
     serverIP: 'mode-pichunter.joinmc.link',
     discordLink: 'https://discord.gg/schoolcraft',
@@ -37,48 +37,13 @@ const ServerHomepage = ({ userData }: ServerHomepageProps) => {
       setServerSettings(JSON.parse(savedSettings));
     }
 
-    // Check if user is admin - simplified logic
-    const adminEmails = ['avivm0900@gmail.com', 'admin@test.com'];
-    const userIsAdmin = adminEmails.includes(userData.email);
-    
-    console.log('Admin check:', userData.email, 'Is admin:', userIsAdmin);
-    setIsAdmin(userIsAdmin);
-
-    // Ensure user is stored in localStorage
-    const storedUsers = JSON.parse(localStorage.getItem('serverUsers') || '[]');
-    let currentUser = storedUsers.find((user: any) => user.email === userData.email);
-    
-    if (!currentUser) {
-      currentUser = {
-        id: Date.now().toString(),
-        fullName: userData.fullName || userData.minecraftUsername || 'User',
-        age: userData.age || '18',
-        class: userData.grade || userData.class || 'N/A',
-        minecraftNickname: userData.minecraftUsername || userData.email.split('@')[0],
-        email: userData.email,
-        registeredAt: new Date().toISOString(),
-        status: 'active',
-        isAdmin: userIsAdmin
-      };
-      
-      storedUsers.push(currentUser);
-      localStorage.setItem('serverUsers', JSON.stringify(storedUsers));
-    } else if (userIsAdmin && !currentUser.isAdmin) {
-      // Ensure admin status is updated
-      currentUser.isAdmin = true;
-      const updatedUsers = storedUsers.map((user: any) => 
-        user.email === userData.email ? currentUser : user
-      );
-      localStorage.setItem('serverUsers', JSON.stringify(updatedUsers));
-    }
-
     // Simulate server status updates
     const interval = setInterval(() => {
       setOnlineCount(Math.floor(Math.random() * 20) + 5);
     }, 30000);
 
     return () => clearInterval(interval);
-  }, [userData.email]);
+  }, []);
 
   const copyServerIP = async () => {
     try {
@@ -97,9 +62,7 @@ const ServerHomepage = ({ userData }: ServerHomepageProps) => {
   };
 
   const handleAdminPanelAccess = () => {
-    // Check if user has admin email before allowing access
-    const adminEmails = ['avivm0900@gmail.com', 'admin@test.com'];
-    if (adminEmails.includes(userData.email)) {
+    if (userData.isAdmin) {
       setShowAdminPanel(true);
     } else {
       toast({
@@ -107,6 +70,27 @@ const ServerHomepage = ({ userData }: ServerHomepageProps) => {
         description: "You don't have admin permissions to access this panel.",
         variant: "destructive",
       });
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        console.error('Logout error:', error);
+        toast({
+          title: "Logout Error",
+          description: "An error occurred during logout.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Logged Out",
+          description: "You have been successfully logged out.",
+        });
+      }
+    } catch (error) {
+      console.error('Logout error:', error);
     }
   };
 
@@ -137,7 +121,7 @@ const ServerHomepage = ({ userData }: ServerHomepageProps) => {
             </CardTitle>
             <CardDescription className="text-lg text-gray-600 dark:text-gray-300">
               Hey {userData.minecraftUsername || userData.fullName || userData.email}! Ready to build and learn together?
-              {isAdmin && (
+              {userData.isAdmin && (
                 <div className="mt-2">
                   <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-100">
                     <Shield size={12} className="mr-1" />
@@ -150,23 +134,32 @@ const ServerHomepage = ({ userData }: ServerHomepageProps) => {
             {/* Debug Info */}
             <div className="mt-4 p-2 bg-gray-100 dark:bg-gray-700 rounded text-xs">
               <p>Debug: Email: {userData.email}</p>
-              <p>Debug: Is Admin: {isAdmin.toString()}</p>
+              <p>Debug: Is Admin: {userData.isAdmin?.toString()}</p>
               <p>Debug: Username: {userData.minecraftUsername || userData.fullName}</p>
             </div>
             
-            {/* Admin Panel Button - Now visible to everyone */}
-            <div className="mt-4">
+            {/* Action Buttons */}
+            <div className="mt-4 flex gap-2 justify-center">
               <Button 
                 onClick={handleAdminPanelAccess}
                 className="bg-red-500 hover:bg-red-600 text-white font-bold"
+                disabled={!userData.isAdmin}
               >
                 <Settings className="mr-2" size={16} />
                 Admin Panel
               </Button>
-              <p className="text-xs text-gray-500 mt-1">
-                {isAdmin ? "You have admin access" : "Admin access required"}
-              </p>
+              <Button 
+                onClick={handleLogout}
+                variant="outline"
+                className="border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
+              >
+                <LogOut className="mr-2" size={16} />
+                Logout
+              </Button>
             </div>
+            <p className="text-xs text-gray-500 mt-1">
+              {userData.isAdmin ? "You have admin access" : "Admin access required for admin panel"}
+            </p>
           </CardHeader>
         </Card>
 
