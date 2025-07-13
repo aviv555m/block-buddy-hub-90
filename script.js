@@ -1,12 +1,12 @@
-const sheetDBUrl = 'https://sheetdb.io/api/v1/6nrlyxofsg4sa'; 
+const sheetDBUrl = 'https://sheetdb.io/api/v1/6nrlyxofsg4sa';
 let isLoginMode = false;
 let isDarkMode = false;
 let currentLang = 'en';
 
 const formTitle = document.getElementById('formTitle');
 const authForm = document.getElementById('authForm');
-const usernameGroup = document.getElementById('minecraftUsername').parentElement;
-const gradeGroup = document.getElementById('grade').parentElement;
+const usernameGroup = document.getElementById('usernameGroup');
+const gradeGroup = document.getElementById('gradeGroup');
 const submitBtn = document.getElementById('submitBtn');
 const toggleModeBtn = document.getElementById('toggleModeBtn');
 const welcomeSection = document.getElementById('welcomeSection');
@@ -28,7 +28,6 @@ const texts = {
     invalidCreds: 'Invalid email or password.',
     loginFail: 'Login failed. Please try again.',
     welcomeBack: (name) => `Welcome back, ${name}!`,
-    welcome: 'Welcome!',
     welcomeMsg: 'You have successfully logged in. Welcome to the SchoolCraft Server.',
     toggleDark: 'Toggle Dark Mode',
     langEn: 'English',
@@ -38,18 +37,6 @@ const texts = {
     passwordPlaceholderRegister: 'Create a password',
     passwordPlaceholderLogin: 'Enter your password',
     gradeLabel: 'Grade / Class (Optional)',
-    gradeOptionsEn: [
-      { value: '', text: 'Select your grade' },
-      { value: '6', text: '6th Grade' },
-      { value: '7', text: '7th Grade' },
-      { value: '8', text: '8th Grade' },
-      { value: '9', text: '9th Grade' },
-      { value: '10', text: '10th Grade' },
-      { value: '11', text: '11th Grade' },
-      { value: '12', text: '12th Grade' },
-    ],
-    toggleModeLinkLogin: 'Already have an account? Login',
-    toggleModeLinkRegister: "Don't have an account? Register",
   },
   he: {
     register: 'הרשמה',
@@ -64,7 +51,6 @@ const texts = {
     invalidCreds: 'אימייל או סיסמה שגויים.',
     loginFail: 'ההתחברות נכשלה. נסה שוב.',
     welcomeBack: (name) => `ברוך הבא, ${name}!`,
-    welcome: 'ברוך הבא!',
     welcomeMsg: 'התחברת בהצלחה. ברוך הבא לשרת סקולקראפט.',
     toggleDark: 'החלף מצב כהה',
     langEn: 'English',
@@ -74,18 +60,6 @@ const texts = {
     passwordPlaceholderRegister: 'צור סיסמה',
     passwordPlaceholderLogin: 'הכנס סיסמה',
     gradeLabel: 'כיתה (אופציונלי)',
-    gradeOptionsHe: [
-      { value: '', text: 'בחר כיתה' },
-      { value: '6', text: "כיתה ו'" },
-      { value: '7', text: "כיתה ז'" },
-      { value: '8', text: "כיתה ח'" },
-      { value: '9', text: "כיתה ט'" },
-      { value: '10', text: "כיתה י'" },
-      { value: '11', text: "כיתה י\"א" },
-      { value: '12', text: "כיתה י\"ב" },
-    ],
-    toggleModeLinkLogin: 'כבר יש לך חשבון? התחבר',
-    toggleModeLinkRegister: "אין לך חשבון? הרשם",
   }
 };
 
@@ -109,7 +83,7 @@ function updateFormMode() {
   clearForm();
   welcomeSection.classList.add('hidden');
   authForm.style.display = 'flex';
-  toggleModeBtn.style.display = 'block';
+  toggleModeBtn.style.display = 'inline-block';
   formTitle.style.display = 'block';
 }
 
@@ -121,22 +95,6 @@ function updateLanguage() {
   document.querySelector('label[for="email"]').textContent = currentLang === 'en' ? 'Email Address' : 'אימייל';
   document.querySelector('label[for="password"]').textContent = currentLang === 'en' ? 'Password' : 'סיסמה';
   document.querySelector('label[for="grade"]').textContent = t.gradeLabel;
-
-  const gradeSelect = document.getElementById('grade');
-  gradeSelect.innerHTML = '';
-
-  const gradeOptions = currentLang === 'en' ? t.gradeOptionsEn : t.gradeOptionsHe;
-  gradeOptions.forEach(opt => {
-    const option = document.createElement('option');
-    option.value = opt.value;
-    option.textContent = opt.text;
-    gradeSelect.appendChild(option);
-  });
-
-  updateFormMode();
-
-  darkModeBtn.textContent = t.toggleDark;
-  langBtn.textContent = currentLang === 'en' ? t.langHe : t.langEn;
 }
 
 function clearForm() {
@@ -145,9 +103,9 @@ function clearForm() {
 
 function showToast(message, duration = 3000) {
   toast.textContent = message;
-  toast.classList.add('show');
+  toast.style.display = 'block';
   setTimeout(() => {
-    toast.classList.remove('show');
+    toast.style.display = 'none';
   }, duration);
 }
 
@@ -257,7 +215,6 @@ async function loginUser() {
 }
 
 // Event Listeners
-
 toggleModeBtn.addEventListener('click', () => {
   isLoginMode = !isLoginMode;
   updateFormMode();
@@ -284,8 +241,9 @@ darkModeBtn.addEventListener('click', () => {
 langBtn.addEventListener('click', () => {
   currentLang = currentLang === 'en' ? 'he' : 'en';
   updateLanguage();
+  updateFormMode();
 });
 
-// Initial setup
+// Initialize
 updateLanguage();
 updateFormMode();
