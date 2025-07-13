@@ -1,4 +1,4 @@
-const sheetDBUrl = 'https://sheetdb.io/api/v1/6nrlyxofsg4sa'; // SheetDB API endpoint
+const sheetDBUrl = 'https://sheetdb.io/api/v1/6nrlyxofsg4sa'; 
 let isLoginMode = false;
 let isDarkMode = false;
 let currentLang = 'en';
@@ -170,7 +170,6 @@ async function registerUser() {
     if (!response.ok) throw new Error('Could not fetch users.');
     const users = await response.json();
 
-    // SheetDB response objects with data property
     const duplicateUser = users.find(user =>
       (user.data.Email?.trim().toLowerCase() === email) ||
       (user.data.MinecraftUsername?.trim().toLowerCase() === minecraftUsername.toLowerCase())
@@ -258,10 +257,12 @@ async function loginUser() {
 }
 
 // Event Listeners
+
 toggleModeBtn.addEventListener('click', () => {
   isLoginMode = !isLoginMode;
   updateFormMode();
 });
+
 authForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   if (isLoginMode) {
@@ -270,6 +271,7 @@ authForm.addEventListener('submit', async (e) => {
     await registerUser();
   }
 });
+
 darkModeBtn.addEventListener('click', () => {
   isDarkMode = !isDarkMode;
   if (isDarkMode) {
@@ -278,10 +280,12 @@ darkModeBtn.addEventListener('click', () => {
     document.body.classList.remove('dark');
   }
 });
+
 langBtn.addEventListener('click', () => {
   currentLang = currentLang === 'en' ? 'he' : 'en';
   updateLanguage();
 });
 
-// Initialize page
+// Initial setup
 updateLanguage();
+updateFormMode();
