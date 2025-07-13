@@ -110,19 +110,57 @@ function App() {
         .from('profiles')
         .select('*')
         .eq('id', userId)
-        .single();
+        .maybeSingle();
 
       if (error) {
         console.error('Error fetching profile:', error);
+        // Try to create profile for existing user if it doesn't exist
+        if (error.code === 'PGRST116' || !data) {
+          await createProfileForExistingUser(userId);
+        }
         return;
       }
 
       if (data) {
         setUserProfile(data as UserProfile);
         console.log('User profile loaded:', data);
+      } else {
+        // Profile doesn't exist, create one
+        await createProfileForExistingUser(userId);
       }
     } catch (error) {
       console.error('Error fetching profile:', error);
+    }
+  };
+
+  const createProfileForExistingUser = async (userId: string) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const profileData = {
+        id: userId,
+        email: user.email || '',
+        minecraft_username: user.user_metadata?.minecraft_username || user.email?.split('@')[0] || '',
+        full_name: user.user_metadata?.full_name || user.user_metadata?.minecraft_username || 'User',
+        grade: user.user_metadata?.grade || 'N/A',
+        is_admin: ['avivm0900@gmail.com', 'admin@test.com'].includes(user.email || '')
+      };
+
+      const { data, error } = await (supabase as any)
+        .from('profiles')
+        .insert(profileData)
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Error creating profile:', error);
+      } else {
+        setUserProfile(data as UserProfile);
+        console.log('Profile created for existing user:', data);
+      }
+    } catch (error) {
+      console.error('Error creating profile for existing user:', error);
     }
   };
 

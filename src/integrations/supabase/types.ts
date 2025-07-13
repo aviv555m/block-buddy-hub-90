@@ -29,6 +29,39 @@ export type Database = {
         }
         Relationships: []
       }
+      profiles: {
+        Row: {
+          created_at: string | null
+          email: string
+          full_name: string | null
+          grade: string | null
+          id: string
+          is_admin: boolean | null
+          minecraft_username: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          email: string
+          full_name?: string | null
+          grade?: string | null
+          id: string
+          is_admin?: boolean | null
+          minecraft_username?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          email?: string
+          full_name?: string | null
+          grade?: string | null
+          id?: string
+          is_admin?: boolean | null
+          minecraft_username?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
