@@ -1,64 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>SchoolCraft Server - Register & Login</title>
-<style>
-  body {
-    font-family: Arial, sans-serif;
-    padding: 20px;
-    max-width: 400px;
-    margin: auto;
-    transition: background-color 0.3s, color 0.3s;
-  }
-  body.dark {
-    background-color: #121212;
-    color: #eee;
-  }
-  h1, h2 {
-    text-align: center;
-  }
-  form {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-  label {
-    font-weight: bold;
-  }
-  input, select, button {
-    padding: 8px;
-    font-size: 1em;
-  }
-  .hidden {
-    display: none !important;
-  }
-  #toast {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background: #333;
-    color: white;
-    padding: 12px 20px;
-    border-radius: 5px;
-    display: none;
-    opacity: 0.9;
-    z-index: 9999;
-  }
-  #toggleModeBtn, #darkModeBtn, #langBtn {
-    background: none;
-    border: none;
-    color: blue;
-    text-decoration: underline;
-    cursor: pointer;
-    margin: 5px 0;
-  }
-  #buttonsContainer {
-    text-align: center;
-    margin-top: 15px;
-  }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SchoolCraft Server – Register & Login</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; max-width: 400px; margin: auto; }
+    h1, h2 { text-align: center; }
+    form { display: flex; flex-direction: column; gap: 12px; }
+    label { font-weight: bold; }
+    input, select, button { padding: 8px; font-size: 1em; }
+    .hidden { display: none; }
+    #toast {
+      position: fixed; top: 20px; right: 20px;
+      background: #333; color: white; padding: 12px 20px;
+      border-radius: 5px; display: none;
+      opacity: 0.9; z-index: 9999;
+    }
+    #toggleModeBtn { background: none; border: none; color: blue; text-decoration: underline; cursor: pointer; }
+  </style>
 </head>
 <body>
 
@@ -97,11 +57,9 @@
   <button type="submit" id="submitBtn">Register</button>
 </form>
 
-<div id="buttonsContainer">
+<p style="text-align:center; margin-top: 15px;">
   <button id="toggleModeBtn">Already have an account? Login</button>
-  <button id="darkModeBtn">Toggle Dark Mode</button>
-  <button id="langBtn">עברית</button>
-</div>
+</p>
 
 <div id="welcomeSection" class="hidden">
   <h2>Welcome!</h2>
