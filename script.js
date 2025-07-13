@@ -1,600 +1,173 @@
-// Translations
-const translations = {
-    en: {
-        title: "SchoolCraft Server - Join Our Minecraft World",
-        join_server: "Join SchoolCraft Server",
-        register_description: "Register to access our educational Minecraft world",
-        login_description: "Sign in to access your SchoolCraft account",
-        minecraft_username: "Minecraft Username",
-        enter_minecraft_username: "Enter your Minecraft username",
-        email_address: "Email Address",
-        enter_email: "your.email@school.edu",
-        password: "Password",
-        enter_password: "Enter your password",
-        grade_class: "Grade/Class (Optional)",
-        select_grade: "Select your grade",
-        grade_6: "6th Grade",
-        grade_7: "7th Grade",
-        grade_8: "8th Grade",
-        grade_9: "9th Grade",
-        grade_10: "10th Grade",
-        grade_11: "11th Grade",
-        grade_12: "12th Grade",
-        join_server_btn: "Join Server",
-        login_btn: "Sign In",
-        register_btn: "Register",
-        switch_to_login: "Already have an account? Sign in",
-        switch_to_register: "Don't have an account? Register",
-        welcome_title: "Welcome to SchoolCraft Server!",
-        welcome_message: "Hey",
-        ready_to_build: "Ready to build and learn together?",
-        server_connection: "Server Connection",
-        server_ip: "Server IP:",
-        step_1: "Open Minecraft Java Edition",
-        step_2: "Click \"Multiplayer\"",
-        step_3: "Click \"Add Server\"",
-        step_4: "Paste the server IP above",
-        step_5: "Click \"Done\" and connect!",
-        server_status: "Server Status",
-        online: "Online",
-        players_online: "Players Online:",
-        updated: "Updated",
-        server_rules: "Server Rules",
-        rule_1: "🏠 No griefing or destroying other players' builds",
-        rule_2: "💬 Keep chat friendly and respectful",
-        rule_3: "🤝 Help other students when they need it",
-        rule_4: "🎯 Stay in designated areas during class time",
-        rule_5: "🚫 No inappropriate builds or language",
-        rule_6: "📚 Educational projects take priority",
-        rule_7: "⚡ Ask permission before using redstone in shared areas",
-        rule_8: "🎮 Have fun and be creative!",
-        join_community: "Join Our Community",
-        discord_description: "Connect with classmates, share builds, and get server updates!",
-        join_discord: "Join Discord Server",
-        quick_tips: "Quick Tips:",
-        tip_1: "• Use /help for in-game commands",
-        tip_2: "• Ask staff for building permissions",
-        tip_3: "• Share screenshots in Discord!",
-        tip_4: "• Report issues to administrators",
-        made_with: "Made with",
-        for_school: "for our school community",
-        registration_successful: "Registration Successful! 🎉",
-        login_successful: "Welcome back! 🎉",
-        welcome_message_toast: "Welcome to SchoolCraft Server! You can now access the server.",
-        welcome_back_toast: "Welcome back to SchoolCraft Server!",
-        missing_info: "Missing Information",
-        fill_required: "Please fill in your Minecraft username and email address.",
-        fill_login_required: "Please fill in your email address and password.",
-        invalid_credentials: "Invalid credentials. Please check your email and password.",
-        creating_account: "Creating Account...",
-        signing_in: "Signing In...",
-        server_ip_copied: "Copied! 📋",
-        ip_copied_desc: "Server IP copied to clipboard"
-    },
-    ru: {
-        title: "Сервер SchoolCraft - Присоединяйтесь к нашему миру Minecraft",
-        join_server: "Присоединиться к серверу SchoolCraft",
-        register_description: "Зарегистрируйтесь для доступа к нашему образовательному миру Minecraft",
-        login_description: "Войдите в свой аккаунт SchoolCraft",
-        minecraft_username: "Имя пользователя Minecraft",
-        enter_minecraft_username: "Введите ваше имя пользователя Minecraft",
-        email_address: "Адрес электронной почты",
-        enter_email: "ваш.email@школа.рф",
-        password: "Пароль",
-        enter_password: "Введите ваш пароль",
-        grade_class: "Класс (Необязательно)",
-        select_grade: "Выберите ваш класс",
-        grade_6: "6 класс",
-        grade_7: "7 класс",
-        grade_8: "8 класс",
-        grade_9: "9 класс",
-        grade_10: "10 класс",
-        grade_11: "11 класс",
-        grade_12: "12 класс",
-        join_server_btn: "Присоединиться к серверу",
-        login_btn: "Войти",
-        register_btn: "Зарегистрироваться",
-        switch_to_login: "Уже есть аккаунт? Войти",
-        switch_to_register: "Нет аккаунта? Зарегистрироваться",
-        welcome_title: "Добро пожаловать на сервер SchoolCraft!",
-        welcome_message: "Привет",
-        ready_to_build: "Готовы строить и учиться вместе?",
-        server_connection: "Подключение к серверу",
-        server_ip: "IP сервера:",
-        step_1: "Откройте Minecraft Java Edition",
-        step_2: "Нажмите \"Сетевая игра\"",
-        step_3: "Нажмите \"Добавить сервер\"",
-        step_4: "Вставьте IP сервера выше",
-        step_5: "Нажмите \"Готово\" и подключитесь!",
-        server_status: "Статус сервера",
-        online: "Онлайн",
-        players_online: "Игроков онлайн:",
-        updated: "Обновлено",
-        server_rules: "Правила сервера",
-        rule_1: "🏠 Не разрушайте постройки других игроков",
-        rule_2: "💬 Ведите себя дружелюбно и уважительно в чате",
-        rule_3: "🤝 Помогайте другим студентам, когда они нуждаются в помощи",
-        rule_4: "🎯 Оставайтесь в отведенных местах во время урока",
-        rule_5: "🚫 Никаких неподобающих построек или языка",
-        rule_6: "📚 Образовательные проекты имеют приоритет",
-        rule_7: "⚡ Спрашивайте разрешения перед использованием красного камня в общих зонах",
-        rule_8: "🎮 Веселитесь и будьте креативными!",
-        join_community: "Присоединяйтесь к нашему сообществу",
-        discord_description: "Общайтесь с одноклассниками, делитесь постройками и получайте обновления сервера!",
-        join_discord: "Присоединиться к серверу Discord",
-        quick_tips: "Быстрые советы:",
-        tip_1: "• Используйте /help для команд в игре",
-        tip_2: "• Спрашивайте у персонала разрешения на строительство",
-        tip_3: "• Делитесь скриншотами в Discord!",
-        tip_4: "• Сообщайте о проблемах администраторам",
-        made_with: "Сделано с",
-        for_school: "для нашего школьного сообщества",
-        registration_successful: "Регистрация успешна! 🎉",
-        login_successful: "Добро пожаловать обратно! 🎉",
-        welcome_message_toast: "Добро пожаловать на сервер SchoolCraft! Теперь вы можете получить доступ к серверу.",
-        welcome_back_toast: "Добро пожаловать обратно на сервер SchoolCraft!",
-        missing_info: "Отсутствует информация",
-        fill_required: "Пожалуйста, заполните ваше имя пользователя Minecraft и адрес электронной почты.",
-        fill_login_required: "Пожалуйста, заполните адрес электронной почты и пароль.",
-        invalid_credentials: "Неверные учетные данные. Проверьте email и пароль.",
-        creating_account: "Создание аккаунта...",
-        signing_in: "Вход в систему...",
-        server_ip_copied: "Скопировано! 📋",
-        ip_copied_desc: "IP сервера скопирован в буфер обмена"
-    },
-    he: {
-        title: "שרת SchoolCraft - הצטרפו לעולם המיינקראפט שלנו",
-        join_server: "הצטרף לשרת SchoolCraft",
-        register_description: "הירשם כדי לקבל גישה לעולם המיינקראפט החינוכי שלנו",
-        login_description: "התחבר לחשבון SchoolCraft שלך",
-        minecraft_username: "שם משתמש מיינקראפט",
-        enter_minecraft_username: "הכנס את שם המשתמש שלך במיינקראפט",
-        email_address: "כתובת אימייל",
-        enter_email: "האימייל.שלך@בית-ספר.ישראל",
-        password: "סיסמה",
-        enter_password: "הכנס את הסיסמה שלך",
-        grade_class: "כיתה (אופציונלי)",
-        select_grade: "בחר את הכיתה שלך",
-        grade_6: "כיתה ו'",
-        grade_7: "כיתה ז'",
-        grade_8: "כיתה ח'",
-        grade_9: "כיתה ט'",
-        grade_10: "כיתה י'",
-        grade_11: "כיתה יא'",
-        grade_12: "כיתה יב'",
-        join_server_btn: "הצטרף לשרת",
-        login_btn: "התחבר",
-        register_btn: "הירשם",
-        switch_to_login: "יש לך כבר חשבון? התחבר",
-        switch_to_register: "אין לך חשבון? הירשם",
-        welcome_title: "ברוכים הבאים לשרת SchoolCraft!",
-        welcome_message: "היי",
-        ready_to_build: "מוכנים לבנות וללמוד יחד?",
-        server_connection: "חיבור לשרת",
-        server_ip: "IP השרת:",
-        step_1: "פתח את Minecraft Java Edition",
-        step_2: "לחץ על \"Multiplayer\"",
-        step_3: "לחץ על \"Add Server\"",
-        step_4: "הדבק את ה-IP של השרת למעלה",
-        step_5: "לחץ \"Done\" והתחבר!",
-        server_status: "סטטוס השרת",
-        online: "מחובר",
-        players_online: "שחקנים מחוברים:",
-        updated: "עודכן",
-        server_rules: "חוקי השרת",
-        rule_1: "🏠 אין להרוס או לפגוע בבניינים של שחקנים אחרים",
-        rule_2: "💬 שמרו על צ'אט ידידותי ומכבד",
-        rule_3: "🤝 עזרו לתלמידים אחרים כשהם צריכים עזרה",
-        rule_4: "🎯 הישארו באזורים המיועדים בזמן השיעור",
-        rule_5: "🚫 אין בניינים או שפה לא הולמים",
-        rule_6: "📚 פרויקטים חינוכיים בעדיפות",
-        rule_7: "⚡ בקשו רשות לפני שימוש ברדסטון באזורים משותפים",
-        rule_8: "🎮 תהנו והיו יצירתיים!",
-        join_community: "הצטרפו לקהילה שלנו",
-        discord_description: "התחברו עם חברי הכיתה, שתפו בניינים וקבלו עדכוני שרת!",
-        join_discord: "הצטרף לשרת Discord",
-        quick_tips: "טיפים מהירים:",
-        tip_1: "• השתמש ב-/help לפקודות במשחק",
-        tip_2: "• בקש מהצוות הרשאות בנייה",
-        tip_3: "• שתף צילומי מסך ב-Discord!",
-        tip_4: "• דווח על בעיות למנהלים",
-        made_with: "נעשה באהבה",
-        for_school: "עבור קהילת בית הספר שלנו",
-        registration_successful: "ההרשמה הצליחה! 🎉",
-        login_successful: "ברוכים השבים! 🎉",
-        welcome_message_toast: "ברוכים הבאים לשרת SchoolCraft! עכשיו אתם יכולים לגשת לשרת.",
-        welcome_back_toast: "ברוכים השבים לשרת SchoolCraft!",
-        missing_info: "מידע חסר",
-        fill_required: "אנא מלא את שם המשתמש שלך במיינקראפט וכתובת האימייל.",
-        fill_login_required: "אנא מלא את כתובת האימייל והסיסמה.",
-        invalid_credentials: "פרטי התחברות שגויים. בדוק את האימייל והסיסמה.",
-        creating_account: "יוצר חשבון...",
-        signing_in: "מתחבר...",
-        server_ip_copied: "הועתק! 📋",
-        ip_copied_desc: "IP השרת הועתק ללוח"
-    }
-};
-
-// Global variables
-let currentLanguage = 'en';
-let userData = null;
-let currentPlayers = 12;
-let maxPlayers = 50;
+const sheetDBUrl = 'https://sheetdb.io/api/v1/6nrlyxofsg4sa'; // Your SheetDB endpoint
 let isLoginMode = false;
 
-// Mock user database (only for simulation, SheetDB is the real database)
-let userDatabase = [
-    {
-        email: 'student@school.edu',
-        password: 'password123',
-        minecraftUsername: 'TestPlayer',
-        grade: '10th'
-    }
-];
+const formTitle = document.getElementById('formTitle');
+const authForm = document.getElementById('authForm');
+const usernameGroup = document.getElementById('usernameGroup');
+const gradeGroup = document.getElementById('gradeGroup');
+const submitBtn = document.getElementById('submitBtn');
+const toggleModeBtn = document.getElementById('toggleModeBtn');
+const welcomeSection = document.getElementById('welcomeSection');
+const toast = document.getElementById('toast');
 
-// Initialize app
-document.addEventListener('DOMContentLoaded', function() {
-    initializeApp();
+toggleModeBtn.addEventListener('click', () => {
+  isLoginMode = !isLoginMode;
+  updateFormMode();
 });
 
-function initializeApp() {
-    // Set initial language from localStorage or default to English
-    const savedLanguage = localStorage.getItem('preferred-language') || 'en';
-    const savedTheme = localStorage.getItem('preferred-theme') || 'light';
-    
-    setLanguage(savedLanguage);
-    setTheme(savedTheme);
-    
-    // Setup event listeners
-    setupEventListeners();
-    
-    // Update server status periodically
-    updateServerStatus();
-    setInterval(updateServerStatus, 30000); // Update every 30 seconds
-}
-
-function setupEventListeners() {
-    // Theme toggle
-    const themeToggle = document.getElementById('theme-toggle');
-    themeToggle.addEventListener('click', toggleTheme);
-    
-    // Language selector
-    const languageSelector = document.getElementById('language-selector');
-    languageSelector.addEventListener('change', function() {
-        setLanguage(this.value);
-    });
-    
-    // Registration/Login form
-    const authForm = document.getElementById('authForm');
-    authForm.addEventListener('submit', handleAuth);
-    
-    // Mode toggle
-    const modeToggle = document.getElementById('mode-toggle');
-    modeToggle.addEventListener('click', toggleMode);
-    
-    // Copy IP button
-    const copyIpBtn = document.getElementById('copy-ip');
-    if (copyIpBtn) {
-        copyIpBtn.addEventListener('click', copyServerIP);
-    }
-    
-    // Discord button
-    const discordBtn = document.getElementById('discord-btn');
-    if (discordBtn) {
-        discordBtn.addEventListener('click', function() {
-            window.open('https://discord.gg/schoolcraft', '_blank');
-        });
-    }
-}
-
-function toggleMode() {
-    isLoginMode = !isLoginMode;
-    updateFormMode();
-}
+authForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  if (isLoginMode) {
+    await loginUser();
+  } else {
+    await registerUser();
+  }
+});
 
 function updateFormMode() {
-    const formTitle = document.querySelector('.title');
-    const formSubtitle = document.querySelector('.subtitle');
-    const usernameGroup = document.getElementById('username-group');
-    const passwordGroup = document.getElementById('password-group');
-    const gradeGroup = document.getElementById('grade-group');
-    const submitBtn = document.getElementById('submit-btn');
-    const modeToggle = document.getElementById('mode-toggle');
-    
-    if (isLoginMode) {
-        formTitle.setAttribute('data-i18n', 'join_server');
-        formSubtitle.setAttribute('data-i18n', 'login_description');
-        usernameGroup.style.display = 'none';
-        passwordGroup.style.display = 'block';
-        gradeGroup.style.display = 'none';
-        submitBtn.querySelector('span').setAttribute('data-i18n', 'login_btn');
-        modeToggle.setAttribute('data-i18n', 'switch_to_register');
-    } else {
-        formTitle.setAttribute('data-i18n', 'join_server');
-        formSubtitle.setAttribute('data-i18n', 'register_description');
-        usernameGroup.style.display = 'block';
-        passwordGroup.style.display = 'block';
-        gradeGroup.style.display = 'block';
-        submitBtn.querySelector('span').setAttribute('data-i18n', 'register_btn');
-        modeToggle.setAttribute('data-i18n', 'switch_to_login');
-    }
-    
-    updateTranslations();
+  if (isLoginMode) {
+    formTitle.textContent = 'Login';
+    usernameGroup.classList.add('hidden');
+    gradeGroup.classList.add('hidden');
+    submitBtn.textContent = 'Login';
+    toggleModeBtn.textContent = "Don't have an account? Register";
+  } else {
+    formTitle.textContent = 'Register';
+    usernameGroup.classList.remove('hidden');
+    gradeGroup.classList.remove('hidden');
+    submitBtn.textContent = 'Register';
+    toggleModeBtn.textContent = 'Already have an account? Login';
+  }
+  clearForm();
+  welcomeSection.classList.add('hidden');
+  authForm.style.display = 'block';
+  toggleModeBtn.style.display = 'inline-block';
+  formTitle.style.display = 'block';
 }
 
-function setLanguage(lang) {
-    currentLanguage = lang;
-    localStorage.setItem('preferred-language', lang);
-    
-    // Update language selector
-    document.getElementById('language-selector').value = lang;
-    
-    // Set HTML attributes for RTL languages
-    const html = document.documentElement;
-    if (lang === 'he') {
-        html.setAttribute('dir', 'rtl');
-        html.setAttribute('lang', 'he');
-    } else {
-        html.setAttribute('dir', 'ltr');
-        html.setAttribute('lang', lang);
-    }
-    
-    // Update all translatable elements
-    updateTranslations();
-    
-    // Update page title
-    document.title = translations[lang].title;
+function clearForm() {
+  authForm.reset();
 }
 
-function updateTranslations() {
-    const elements = document.querySelectorAll('[data-i18n]');
-    elements.forEach(element => {
-        const key = element.getAttribute('data-i18n');
-        if (translations[currentLanguage] && translations[currentLanguage][key]) {
-            element.textContent = translations[currentLanguage][key];
+function showToast(message, duration = 3000) {
+  toast.textContent = message;
+  toast.style.display = 'block';
+  setTimeout(() => {
+    toast.style.display = 'none';
+  }, duration);
+}
+
+async function registerUser() {
+  const minecraftUsername = document.getElementById('minecraftUsername').value.trim();
+  const email = document.getElementById('email').value.trim().toLowerCase();
+  const password = document.getElementById('password').value.trim();
+  const grade = document.getElementById('grade').value;
+
+  if (!minecraftUsername || !email || !password) {
+    showToast('Please fill in all required fields.');
+    return;
+  }
+
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Registering...';
+
+  try {
+    // Fetch existing users to check duplicates
+    const response = await fetch(sheetDBUrl);
+    if (!response.ok) throw new Error('Could not fetch users.');
+    const users = await response.json();
+
+    // Check duplicates by email or minecraft username
+    const duplicateUser = users.find(user =>
+      user.Email.toLowerCase() === email || 
+      user.MinecraftUsername.toLowerCase() === minecraftUsername.toLowerCase()
+    );
+
+    if (duplicateUser) {
+      showToast('User with this email or Minecraft username already exists.');
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Register';
+      return;
+    }
+
+    // No duplicates - add new user
+    const addResponse = await fetch(sheetDBUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        data: {
+          MinecraftUsername: minecraftUsername,
+          Email: email,
+          Password: password,
+          Grade: grade
         }
+      }),
     });
-    
-    // Update placeholders
-    const placeholderElements = document.querySelectorAll('[data-i18n-placeholder]');
-    placeholderElements.forEach(element => {
-        const key = element.getAttribute('data-i18n-placeholder');
-        if (translations[currentLanguage] && translations[currentLanguage][key]) {
-            element.placeholder = translations[currentLanguage][key];
-        }
-    });
-}
 
-function setTheme(theme) {
-    const body = document.body;
-    const themeIcon = document.getElementById('theme-icon');
-    
-    if (theme === 'dark') {
-        body.classList.add('dark-theme');
-        themeIcon.textContent = '🌙';
-    } else {
-        body.classList.remove('dark-theme');
-        themeIcon.textContent = '☀️';
-    }
-    
-    localStorage.setItem('preferred-theme', theme);
-}
+    if (!addResponse.ok) throw new Error('Failed to register user.');
 
-function toggleTheme() {
-    const body = document.body;
-    const currentTheme = body.classList.contains('dark-theme') ? 'dark' : 'light';
-    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-    setTheme(newTheme);
-}
+    showToast('Registration successful! You can now login.', 4000);
 
-function updateServerStatus() {
-    const onlinePlayersElement = document.getElementById('players-online');
-    const serverStatusElement = document.getElementById('server-status');
-    const lastUpdatedElement = document.getElementById('last-updated');
-    
-    currentPlayers = Math.min(maxPlayers, Math.max(0, currentPlayers + (Math.random() > 0.5 ? 1 : -1)));
-    
-    if (onlinePlayersElement) {
-        onlinePlayersElement.textContent = `${currentPlayers} / ${maxPlayers}`;
-    }
-    
-    if (serverStatusElement) {
-        serverStatusElement.textContent = translations[currentLanguage].online;
-        serverStatusElement.classList.add('online');
-        serverStatusElement.classList.remove('offline');
-    }
-    
-    if (lastUpdatedElement) {
-        lastUpdatedElement.textContent = new Date().toLocaleTimeString();
-    }
-}
-
-function copyServerIP() {
-    const ip = 'mc.schoolcraft.edu';
-    navigator.clipboard.writeText(ip).then(() => {
-        showToast(translations[currentLanguage].server_ip_copied, translations[currentLanguage].ip_copied_desc, 'success');
-    });
-}
-
-function showToast(title, message, type) {
-    const toast = document.getElementById('toast');
-    toast.className = 'toast ' + type;
-    toast.querySelector('strong').textContent = title;
-    toast.querySelector('p').textContent = message;
-    toast.style.display = 'block';
-    setTimeout(() => {
-        toast.style.display = 'none';
-    }, 4000);
-}
-
-function handleAuth(event) {
-    event.preventDefault();
-    if (isLoginMode) {
-        handleLogin();
-    } else {
-        handleRegistration();
-    }
-}
-
-function handleRegistration() {
-    const minecraftUsername = document.getElementById('minecraft-username').value.trim();
-    const email = document.getElementById('email').value.trim();
-    const password = document.getElementById('password').value.trim();
-    const grade = document.getElementById('grade').value;
-    
-    if (!minecraftUsername || !email || !password) {
-        showToast(
-            translations[currentLanguage].missing_info,
-            translations[currentLanguage].fill_required,
-            'error'
-        );
-        return;
-    }
-    
-    const submitBtn = document.getElementById('submit-btn');
-    const originalText = submitBtn.innerHTML;
-    submitBtn.innerHTML = `<span>${translations[currentLanguage].creating_account}</span>`;
-    submitBtn.disabled = true;
-    
-    // Check duplicates first
-    fetch('https://sheetdb.io/api/v1/6nrlyxofsg4sa')
-    .then(response => {
-        if (!response.ok) throw new Error('Failed to fetch users');
-        return response.json();
-    })
-    .then(users => {
-        const duplicate = users.find(user =>
-            user.Email.toLowerCase() === email.toLowerCase() ||
-            user.MinecraftUsername.toLowerCase() === minecraftUsername.toLowerCase()
-        );
-        if (duplicate) {
-            showToast(
-                'Error',
-                'User with this email or Minecraft username already exists.',
-                'error'
-            );
-            submitBtn.innerHTML = originalText;
-            submitBtn.disabled = false;
-            throw new Error('Duplicate user');
-        }
-        // No duplicate, proceed with registration
-        return fetch('https://sheetdb.io/api/v1/6nrlyxofsg4sa', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                data: {
-                    MinecraftUsername: minecraftUsername,
-                    Email: email,
-                    Password: password,
-                    Grade: grade || ''
-                }
-            })
-        });
-    })
-    .then(response => {
-        if (!response.ok) throw new Error('Failed to save user data');
-        return response.json();
-    })
-    .then(data => {
-        showToast(
-            translations[currentLanguage].registration_successful,
-            translations[currentLanguage].welcome_message_toast,
-            'success'
-        );
-        // Switch to login mode after registration
-        isLoginMode = true;
-        updateFormMode();
-        // Clear form inputs
-        document.getElementById('authForm').reset();
-    })
-    .catch(error => {
-        if (error.message !== 'Duplicate user') {
-            console.error('Registration error:', error);
-            showToast('Error', 'Registration failed. Please try again.', 'error');
-        }
-    })
-    .finally(() => {
-        submitBtn.innerHTML = originalText;
-        submitBtn.disabled = false;
-    });
-}
-
-function handleLogin() {
-    const email = document.getElementById('email').value.trim();
-    const password = document.getElementById('password').value.trim();
-    
-    if (!email || !password) {
-        showToast(
-            translations[currentLanguage].missing_info,
-            translations[currentLanguage].fill_login_required,
-            'error'
-        );
-        return;
-    }
-    
-    const submitBtn = document.getElementById('submit-btn');
-    const originalText = submitBtn.innerHTML;
-    submitBtn.innerHTML = `<span>${translations[currentLanguage].signing_in}</span>`;
-    submitBtn.disabled = true;
-    
-    fetch('https://sheetdb.io/api/v1/6nrlyxofsg4sa')
-    .then(response => {
-        if (!response.ok) throw new Error('Failed to fetch users');
-        return response.json();
-    })
-    .then(users => {
-        const foundUser = users.find(user => 
-            user.Email.toLowerCase() === email.toLowerCase() &&
-            user.Password === password
-        );
-        
-        if (foundUser) {
-            userData = foundUser;
-            showToast(
-                translations[currentLanguage].login_successful,
-                translations[currentLanguage].welcome_back_toast,
-                'success'
-            );
-            setTimeout(() => {
-                showHomepage();
-            }, 1500);
-        } else {
-            showToast(
-                translations[currentLanguage].invalid_credentials,
-                '',
-                'error'
-            );
-        }
-    })
-    .catch(error => {
-        console.error('Login error:', error);
-        showToast(
-            'Error',
-            'Unable to login at this time. Please try again later.',
-            'error'
-        );
-    })
-    .finally(() => {
-        submitBtn.innerHTML = originalText;
-        submitBtn.disabled = false;
-    });
-}
-
-function showHomepage() {
-    // Hide auth form and show homepage content
-    document.getElementById('auth-container').style.display = 'none';
-    document.getElementById('homepage-container').style.display = 'block';
-    
-    // Display welcome message
-    const welcomeTitle = document.getElementById('welcome-title');
-    const welcomeMsg = document.getElementById('welcome-message');
-    
-    welcomeTitle.textContent = translations[currentLanguage].welcome_title;
-    welcomeMsg.textContent = `${translations[currentLanguage].welcome_message} ${userData.minecraftUsername || userData.MinecraftUsername || ''}! ${translations[currentLanguage].ready_to_build}`;
-}
-
-// Initialize form mode and translations on page load
-document.addEventListener('DOMContentLoaded', () => {
+    // Switch to login mode automatically
+    isLoginMode = true;
     updateFormMode();
-    updateTranslations();
-});
+
+  } catch (error) {
+    console.error(error);
+    showToast('Registration failed. Please try again.');
+  }
+
+  submitBtn.disabled = false;
+  submitBtn.textContent = 'Register';
+}
+
+async function loginUser() {
+  const email = document.getElementById('email').value.trim().toLowerCase();
+  const password = document.getElementById('password').value.trim();
+
+  if (!email || !password) {
+    showToast('Please fill in email and password.');
+    return;
+  }
+
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Logging in...';
+
+  try {
+    const response = await fetch(sheetDBUrl);
+    if (!response.ok) throw new Error('Could not fetch users.');
+    const users = await response.json();
+
+    // Find user with matching email and password
+    const user = users.find(u =>
+      u.Email.toLowerCase() === email &&
+      u.Password === password
+    );
+
+    if (!user) {
+      showToast('Invalid email or password.');
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Login';
+      return;
+    }
+
+    // Successful login
+    showToast(`Welcome back, ${user.MinecraftUsername}!`, 4000);
+
+    // Hide form and show welcome message
+    authForm.style.display = 'none';
+    toggleModeBtn.style.display = 'none';
+    formTitle.style.display = 'none';
+    welcomeSection.classList.remove('hidden');
+
+  } catch (error) {
+    console.error(error);
+    showToast('Login failed. Please try again.');
+  }
+
+  submitBtn.disabled = false;
+  submitBtn.textContent = 'Login';
+}
+
+// Initialize form mode on page load
+updateFormMode();
