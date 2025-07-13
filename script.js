@@ -1,5 +1,7 @@
 const sheetDBUrl = 'https://sheetdb.io/api/v1/6nrlyxofsg4sa'; // Your SheetDB endpoint
 let isLoginMode = false;
+let isDarkMode = false;
+let currentLang = 'en';
 
 const formTitle = document.getElementById('formTitle');
 const authForm = document.getElementById('authForm');
@@ -9,6 +11,50 @@ const submitBtn = document.getElementById('submitBtn');
 const toggleModeBtn = document.getElementById('toggleModeBtn');
 const welcomeSection = document.getElementById('welcomeSection');
 const toast = document.getElementById('toast');
+const darkModeBtn = document.getElementById('darkModeBtn');
+const langBtn = document.getElementById('langBtn');
+
+// Text strings for English and Hebrew
+const texts = {
+  en: {
+    register: 'Register',
+    login: 'Login',
+    alreadyAccount: 'Already have an account? Login',
+    noAccount: "Don't have an account? Register",
+    fillRequired: 'Please fill in all required fields.',
+    userExists: 'User with this email or Minecraft username already exists.',
+    regSuccess: 'Registration successful! You can now login.',
+    regFail: 'Registration failed. Please try again.',
+    fillEmailPass: 'Please fill in email and password.',
+    invalidCreds: 'Invalid email or password.',
+    loginFail: 'Login failed. Please try again.',
+    welcomeBack: (name) => `Welcome back, ${name}!`,
+    welcome: 'Welcome!',
+    welcomeMsg: 'You have successfully logged in. Welcome to the SchoolCraft Server.',
+    toggleDark: 'Toggle Dark Mode',
+    langEn: 'English',
+    langHe: 'עברית'
+  },
+  he: {
+    register: 'הרשמה',
+    login: 'התחברות',
+    alreadyAccount: 'כבר יש לך חשבון? התחבר',
+    noAccount: "אין לך חשבון? הרשם",
+    fillRequired: 'אנא מלא את כל השדות הנדרשים.',
+    userExists: 'משתמש עם האימייל או שם המשתמש כבר קיים.',
+    regSuccess: 'ההרשמה הצליחה! כעת תוכל להתחבר.',
+    regFail: 'ההרשמה נכשלה. נסה שוב.',
+    fillEmailPass: 'אנא מלא אימייל וסיסמה.',
+    invalidCreds: 'אימייל או סיסמה שגויים.',
+    loginFail: 'ההתחברות נכשלה. נסה שוב.',
+    welcomeBack: (name) => `ברוך הבא, ${name}!`,
+    welcome: 'ברוך הבא!',
+    welcomeMsg: 'התחברת בהצלחה. ברוך הבא לשרת סקולקראפט.',
+    toggleDark: 'החלף מצב כהה',
+    langEn: 'English',
+    langHe: 'עברית'
+  }
+};
 
 toggleModeBtn.addEventListener('click', () => {
   isLoginMode = !isLoginMode;
@@ -24,25 +70,86 @@ authForm.addEventListener('submit', async (e) => {
   }
 });
 
+darkModeBtn.addEventListener('click', () => {
+  isDarkMode = !isDarkMode;
+  if (isDarkMode) {
+    document.body.classList.add('dark');
+  } else {
+    document.body.classList.remove('dark');
+  }
+});
+
+langBtn.addEventListener('click', () => {
+  currentLang = currentLang === 'en' ? 'he' : 'en';
+  updateLanguage();
+});
+
 function updateFormMode() {
+  const t = texts[currentLang];
   if (isLoginMode) {
-    formTitle.textContent = 'Login';
+    formTitle.textContent = t.login;
     usernameGroup.classList.add('hidden');
     gradeGroup.classList.add('hidden');
-    submitBtn.textContent = 'Login';
-    toggleModeBtn.textContent = "Don't have an account? Register";
+    submitBtn.textContent = t.login;
+    toggleModeBtn.textContent = t.noAccount;
   } else {
-    formTitle.textContent = 'Register';
+    formTitle.textContent = t.register;
     usernameGroup.classList.remove('hidden');
     gradeGroup.classList.remove('hidden');
-    submitBtn.textContent = 'Register';
-    toggleModeBtn.textContent = 'Already have an account? Login';
+    submitBtn.textContent = t.register;
+    toggleModeBtn.textContent = t.alreadyAccount;
   }
   clearForm();
   welcomeSection.classList.add('hidden');
   authForm.style.display = 'flex';
   toggleModeBtn.style.display = 'inline-block';
   formTitle.style.display = 'block';
+}
+
+function updateLanguage() {
+  const t = texts[currentLang];
+
+  // Update all static text elements
+  updateFormMode();
+
+  // Update placeholders
+  document.getElementById('minecraftUsername').placeholder = currentLang === 'en' ? 'Your Minecraft username' : 'שם משתמש במיינקראפט';
+  document.getElementById('email').placeholder = currentLang === 'en' ? 'you@school.edu' : 'you@school.edu (דואר אלקטרוני)';
+  document.getElementById('password').placeholder = currentLang === 'en' ? (isLoginMode ? 'Enter your password' : 'Create a password') : (isLoginMode ? 'הכנס סיסמה' : 'צור סיסמה');
+
+  // Update grade label
+  const gradeLabel = document.querySelector('label[for="grade"]');
+  gradeLabel.textContent = currentLang === 'en' ? 'Grade/Class (Optional):' : 'כיתה (אופציונלי):';
+
+  // Update grade select options
+  const gradeSelect = document.getElementById('grade');
+  gradeSelect.innerHTML = currentLang === 'en' ? `
+    <option value="">Select your grade</option>
+    <option value="6">6th Grade</option>
+    <option value="7">7th Grade</option>
+    <option value="8">8th Grade</option>
+    <option value="9">9th Grade</option>
+    <option value="10">10th Grade</option>
+    <option value="11">11th Grade</option>
+    <option value="12">12th Grade</option>
+  ` : `
+    <option value="">בחר כיתה</option>
+    <option value="6">כיתה ו'</option>
+    <option value="7">כיתה ז'</option>
+    <option value="8">כיתה ח'</option>
+    <option value="9">כיתה ט'</option>
+    <option value="10">כיתה י'</option>
+    <option value="11">כיתה י"א</option>
+    <option value="12">כיתה י"ב</option>
+  `;
+
+  // Update welcome section
+  document.querySelector('#welcomeSection h2').textContent = t.welcome;
+  document.querySelector('#welcomeSection p').textContent = t.welcomeMsg;
+
+  // Update buttons
+  darkModeBtn.textContent = t.toggleDark;
+  langBtn.textContent = currentLang === 'en' ? t.langHe : t.langEn;
 }
 
 function clearForm() {
@@ -64,34 +171,30 @@ async function registerUser() {
   const grade = document.getElementById('grade').value;
 
   if (!minecraftUsername || !email || !password) {
-    showToast('Please fill in all required fields.');
+    showToast(texts[currentLang].fillRequired);
     return;
   }
 
   submitBtn.disabled = true;
-  submitBtn.textContent = 'Registering...';
+  submitBtn.textContent = texts[currentLang].register + '...';
 
   try {
-    // Fetch existing users to check duplicates
     const response = await fetch(sheetDBUrl);
     if (!response.ok) throw new Error('Could not fetch users.');
     const users = await response.json();
 
-    // SheetDB returns an array where each user object has a "data" property
-    // Adjust the check accordingly:
     const duplicateUser = users.find(user =>
       (user.data.Email?.trim().toLowerCase() === email) ||
       (user.data.MinecraftUsername?.trim().toLowerCase() === minecraftUsername.toLowerCase())
     );
 
     if (duplicateUser) {
-      showToast('User with this email or Minecraft username already exists.');
+      showToast(texts[currentLang].userExists);
       submitBtn.disabled = false;
-      submitBtn.textContent = 'Register';
+      submitBtn.textContent = texts[currentLang].register;
       return;
     }
 
-    // No duplicates - add new user
     const addResponse = await fetch(sheetDBUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -107,19 +210,18 @@ async function registerUser() {
 
     if (!addResponse.ok) throw new Error('Failed to register user.');
 
-    showToast('Registration successful! You can now login.', 4000);
+    showToast(texts[currentLang].regSuccess, 4000);
 
-    // Switch to login mode automatically
     isLoginMode = true;
     updateFormMode();
 
   } catch (error) {
     console.error(error);
-    showToast('Registration failed. Please try again.');
+    showToast(texts[currentLang].regFail);
   }
 
   submitBtn.disabled = false;
-  submitBtn.textContent = 'Register';
+  submitBtn.textContent = texts[currentLang].register;
 }
 
 async function loginUser() {
@@ -127,35 +229,32 @@ async function loginUser() {
   const password = document.getElementById('password').value.trim();
 
   if (!email || !password) {
-    showToast('Please fill in email and password.');
+    showToast(texts[currentLang].fillEmailPass);
     return;
   }
 
   submitBtn.disabled = true;
-  submitBtn.textContent = 'Logging in...';
+  submitBtn.textContent = texts[currentLang].login + '...';
 
   try {
     const response = await fetch(sheetDBUrl);
     if (!response.ok) throw new Error('Could not fetch users.');
     const users = await response.json();
 
-    // Adjust for SheetDB data structure: user.data.Email etc.
     const user = users.find(u =>
       u.data.Email?.trim().toLowerCase() === email &&
       u.data.Password?.trim() === password
     );
 
     if (!user) {
-      showToast('Invalid email or password.');
+      showToast(texts[currentLang].invalidCreds);
       submitBtn.disabled = false;
-      submitBtn.textContent = 'Login';
+      submitBtn.textContent = texts[currentLang].login;
       return;
     }
 
-    // Successful login
-    showToast(`Welcome back, ${user.data.MinecraftUsername}!`, 4000);
+    showToast(texts[currentLang].welcomeBack(user.data.MinecraftUsername), 4000);
 
-    // Hide form and show welcome message
     authForm.style.display = 'none';
     toggleModeBtn.style.display = 'none';
     formTitle.style.display = 'none';
@@ -163,12 +262,13 @@ async function loginUser() {
 
   } catch (error) {
     console.error(error);
-    showToast('Login failed. Please try again.');
+    showToast(texts[currentLang].loginFail);
   }
 
   submitBtn.disabled = false;
-  submitBtn.textContent = 'Login';
+  submitBtn.textContent = texts[currentLang].login;
 }
 
-// Initialize form mode on page load
+// Initialize on page load
 updateFormMode();
+updateLanguage();
