@@ -1,69 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>SchoolCraft Server – Register & Login</title>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Block Buddy Hub</title>
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; max-width: 400px; margin: auto; }
+    body { font-family: Arial,sans-serif; max-width: 400px; margin: auto; padding: 20px; transition: background .3s, color .3s; }
+    body.dark { background: #222; color: #ddd; }
+    .hidden { display: none; }
+    #themeBtn { position: absolute; top: 20px; right: 20px; font-size: 1.2em; cursor: pointer; }
     h1, h2 { text-align: center; }
     form { display: flex; flex-direction: column; gap: 12px; }
-    label { font-weight: bold; }
-    input, select, button { padding: 8px; font-size: 1em; }
-    .hidden { display: none; }
-    #toast {
-      position: fixed; top: 20px; right: 20px;
-      background: #333; color: white; padding: 12px 20px;
-      border-radius: 5px; display: none;
-      opacity: 0.9; z-index: 9999;
-    }
-    #toggleModeBtn { background: none; border: none; color: blue; text-decoration: underline; cursor: pointer; }
+    input, select, button { padding: 10px; font-size: 1em; }
+    #toggleModeBtn { background: none; border: none; color: blue; text-decoration: underline; cursor: pointer; margin-top: 10px; }
+    #toast { position: fixed; top: 20px; right: 20px; background: #333; color: #fff; padding: 12px 20px; border-radius: 5px; opacity: .9; display: none; z-index: 999;}
   </style>
 </head>
 <body>
+
+<button id="themeBtn">🌙</button>
 
 <h1 id="formTitle">Register</h1>
 
 <form id="authForm">
   <div id="usernameGroup">
-    <label for="minecraftUsername">Minecraft Username:</label>
-    <input type="text" id="minecraftUsername" name="minecraftUsername" placeholder="Your Minecraft username" />
+    <input type="text" id="minecraftUsername" placeholder="Minecraft Username" />
   </div>
-
-  <div>
-    <label for="email">Email Address:</label>
-    <input type="email" id="email" name="email" placeholder="you@school.edu" />
-  </div>
-
-  <div id="passwordGroup">
-    <label for="password">Password:</label>
-    <input type="password" id="password" name="password" placeholder="Create a password" />
-  </div>
-
-  <div id="gradeGroup">
-    <label for="grade">Grade/Class (Optional):</label>
-    <select id="grade" name="grade">
-      <option value="">Select your grade</option>
-      <option value="6">6th Grade</option>
-      <option value="7">7th Grade</option>
-      <option value="8">8th Grade</option>
-      <option value="9">9th Grade</option>
-      <option value="10">10th Grade</option>
-      <option value="11">11th Grade</option>
-      <option value="12">12th Grade</option>
-    </select>
-  </div>
-
+  <input type="email" id="email" placeholder="Email Address" />
+  <input type="password" id="password" placeholder="Password" />
+  <select id="grade">
+    <option value="">Select Grade (Optional)</option>
+    <option>6th</option><option>7th</option><option>8th</option><option>9th</option><option>10th</option><option>11th</option><option>12th</option>
+  </select>
   <button type="submit" id="submitBtn">Register</button>
 </form>
 
-<p style="text-align:center; margin-top: 15px;">
-  <button id="toggleModeBtn">Already have an account? Login</button>
-</p>
+<button id="toggleModeBtn">Already have an account? Login</button>
 
 <div id="welcomeSection" class="hidden">
-  <h2>Welcome!</h2>
-  <p>You have successfully logged in. Welcome to the SchoolCraft Server.</p>
+  <h2>Welcome to Block Buddy Hub!</h2>
+  <p>You are now logged in 🎉</p>
 </div>
 
 <div id="toast"></div>
@@ -71,4 +47,3 @@
 <script src="script.js"></script>
 </body>
 </html>
-
