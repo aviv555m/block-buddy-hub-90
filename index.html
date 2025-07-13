@@ -4,163 +4,84 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>SchoolCraft Server - Register & Login</title>
-
-<!-- Styles from your working UI example, adapted -->
 <style>
-  /* Basic reset */
-  * {
-    box-sizing: border-box;
-  }
   body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #f7f8fa;
-    color: #333;
-    margin: 0;
-    padding: 0;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    max-width: 400px;
+    margin: auto;
+    transition: background-color 0.3s, color 0.3s;
   }
   body.dark {
-    background: #121212;
+    background-color: #121212;
     color: #eee;
   }
-  .container {
-    background: white;
-    max-width: 420px;
-    width: 100%;
-    border-radius: 10px;
-    padding: 30px 40px;
-    box-shadow: 0 0 15px rgba(0,0,0,0.1);
-    transition: background 0.3s, color 0.3s;
-  }
-  body.dark .container {
-    background: #1e1e1e;
-    color: #eee;
-    box-shadow: 0 0 20px rgba(0,0,0,0.7);
-  }
-  h1 {
+  h1, h2 {
     text-align: center;
-    margin-bottom: 30px;
   }
   form {
     display: flex;
     flex-direction: column;
+    gap: 12px;
   }
   label {
-    font-weight: 600;
-    margin-bottom: 6px;
+    font-weight: bold;
   }
-  input, select {
-    padding: 12px 15px;
-    margin-bottom: 20px;
-    border: 1px solid #ddd;
-    border-radius: 7px;
-    font-size: 16px;
-    transition: border-color 0.2s;
-    background: #fff;
-    color: inherit;
-  }
-  body.dark input, body.dark select {
-    background: #2c2c2c;
-    border-color: #555;
-    color: #eee;
-  }
-  input:focus, select:focus {
-    border-color: #3a86ff;
-    outline: none;
-  }
-  button {
-    background: #3a86ff;
-    border: none;
-    color: white;
-    font-weight: 600;
-    font-size: 16px;
-    padding: 14px 0;
-    border-radius: 7px;
-    cursor: pointer;
-    transition: background 0.3s;
-  }
-  button:disabled {
-    background: #8ab4f8;
-    cursor: not-allowed;
-  }
-  button:hover:not(:disabled) {
-    background: #265ecf;
+  input, select, button {
+    padding: 8px;
+    font-size: 1em;
   }
   .hidden {
     display: none !important;
   }
-  .switch-link {
-    margin-top: 15px;
-    text-align: center;
-    font-size: 14px;
-    color: #3a86ff;
-    cursor: pointer;
-    user-select: none;
-  }
-  .switch-link:hover {
-    text-decoration: underline;
-  }
-  .bottom-buttons {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 20px;
-  }
-  .bottom-buttons button {
-    background: none;
-    border: none;
-    color: #3a86ff;
-    font-size: 14px;
-    cursor: pointer;
-    padding: 0;
-    text-decoration: underline;
-  }
-  .bottom-buttons button:hover {
-    color: #265ecf;
-  }
   #toast {
     position: fixed;
-    top: 25px;
-    right: 25px;
+    top: 20px;
+    right: 20px;
     background: #333;
     color: white;
-    padding: 15px 25px;
-    border-radius: 8px;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.4s;
-    z-index: 10000;
-    max-width: 280px;
-  }
-  #toast.show {
+    padding: 12px 20px;
+    border-radius: 5px;
+    display: none;
     opacity: 0.9;
-    pointer-events: auto;
+    z-index: 9999;
   }
-  #welcomeSection {
+  #toggleModeBtn, #darkModeBtn, #langBtn {
+    background: none;
+    border: none;
+    color: blue;
+    text-decoration: underline;
+    cursor: pointer;
+    margin: 5px 0;
+  }
+  #buttonsContainer {
     text-align: center;
-    margin-top: 20px;
+    margin-top: 15px;
   }
 </style>
-
 </head>
 <body>
 
-<div class="container">
-  <h1 id="formTitle">Register</h1>
+<h1 id="formTitle">Register</h1>
 
-  <form id="authForm">
-    <label for="minecraftUsername">Minecraft Username</label>
+<form id="authForm">
+  <div id="usernameGroup">
+    <label for="minecraftUsername">Minecraft Username:</label>
     <input type="text" id="minecraftUsername" name="minecraftUsername" placeholder="Your Minecraft username" />
+  </div>
 
-    <label for="email">Email Address</label>
+  <div>
+    <label for="email">Email Address:</label>
     <input type="email" id="email" name="email" placeholder="you@school.edu" />
+  </div>
 
-    <label for="password">Password</label>
+  <div id="passwordGroup">
+    <label for="password">Password:</label>
     <input type="password" id="password" name="password" placeholder="Create a password" />
+  </div>
 
-    <label for="grade">Grade / Class (Optional)</label>
+  <div id="gradeGroup">
+    <label for="grade">Grade/Class (Optional):</label>
     <select id="grade" name="grade">
       <option value="">Select your grade</option>
       <option value="6">6th Grade</option>
@@ -171,21 +92,20 @@
       <option value="11">11th Grade</option>
       <option value="12">12th Grade</option>
     </select>
-
-    <button type="submit" id="submitBtn">Register</button>
-  </form>
-
-  <div class="switch-link" id="toggleModeBtn">Already have an account? Login</div>
-
-  <div class="bottom-buttons">
-    <button id="darkModeBtn">Toggle Dark Mode</button>
-    <button id="langBtn">עברית</button>
   </div>
 
-  <div id="welcomeSection" class="hidden">
-    <h2>Welcome!</h2>
-    <p>You have successfully logged in. Welcome to the SchoolCraft Server.</p>
-  </div>
+  <button type="submit" id="submitBtn">Register</button>
+</form>
+
+<div id="buttonsContainer">
+  <button id="toggleModeBtn">Already have an account? Login</button>
+  <button id="darkModeBtn">Toggle Dark Mode</button>
+  <button id="langBtn">עברית</button>
+</div>
+
+<div id="welcomeSection" class="hidden">
+  <h2>Welcome!</h2>
+  <p>You have successfully logged in. Welcome to the SchoolCraft Server.</p>
 </div>
 
 <div id="toast"></div>
