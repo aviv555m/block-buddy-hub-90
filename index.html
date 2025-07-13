@@ -1,266 +1,74 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title data-i18n="title">SchoolCraft Server - Join Our Minecraft World</title>
-    <meta
-      name="description"
-      content="Register to join our school Minecraft server - A safe, educational, and fun gaming environment for students"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Orbitron:wght@400;700;900&display=swap"
-      rel="stylesheet"
-    />
-    <link href="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.js" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>SchoolCraft Server - Register & Login</title>
+<style>
+  body { font-family: Arial, sans-serif; padding: 20px; max-width: 400px; margin: auto; }
+  h1, h2 { text-align: center; }
+  form { display: flex; flex-direction: column; gap: 12px; }
+  label { font-weight: bold; }
+  input, select, button { padding: 8px; font-size: 1em; }
+  .hidden { display: none; }
+  #toast {
+    position: fixed; top: 20px; right: 20px;
+    background: #333; color: white; padding: 12px 20px;
+    border-radius: 5px; display: none;
+    opacity: 0.9;
+    z-index: 9999;
+  }
+  #toggleModeBtn { background: none; border: none; color: blue; text-decoration: underline; cursor: pointer; }
+</style>
 </head>
-<body class="light-theme">
-    <!-- Theme and Language Controls -->
-    <div class="controls-bar">
-        <button id="theme-toggle" class="control-btn">
-            <span class="icon" id="theme-icon">🌙</span>
-        </button>
-        <select id="language-selector" class="control-btn">
-            <option value="en">EN</option>
-            <option value="ru">RU</option>
-            <option value="he">עב</option>
-        </select>
-    </div>
+<body>
 
-    <div class="container">
-        <!-- Registration/Login Form -->
-        <div id="registration-form" class="form-container">
-            <div class="card minecraft-block">
-                <div class="card-header">
-                    <div class="server-icon floating-animation">
-                        <div class="emerald-block"></div>
-                    </div>
-                    <h1 class="title font-minecraft" data-i18n="join_server">Join SchoolCraft Server</h1>
-                    <p class="subtitle font-pixel" data-i18n="register_description">Register to access our educational Minecraft world</p>
-                </div>
+<h1 id="formTitle">Register</h1>
 
-                <div class="card-content">
-                    <form id="authForm" class="form">
-                        <div class="form-group" id="username-group">
-                            <label for="minecraft-username" class="label font-pixel">
-                                <span class="icon">👤</span>
-                                <span data-i18n="minecraft_username">Minecraft Username</span> *
-                            </label>
-                            <input
-                              id="minecraft-username"
-                              type="text"
-                              class="input font-pixel"
-                              data-i18n-placeholder="enter_minecraft_username"
-                              placeholder="Enter your Minecraft username"
-                            />
-                        </div>
+<form id="authForm">
+  <div id="usernameGroup">
+    <label for="minecraftUsername">Minecraft Username:</label>
+    <input type="text" id="minecraftUsername" name="minecraftUsername" placeholder="Your Minecraft username" />
+  </div>
 
-                        <div class="form-group">
-                            <label for="email" class="label font-pixel">
-                                <span class="icon">✉️</span>
-                                <span data-i18n="email_address">Email Address</span> *
-                            </label>
-                            <input
-                              id="email"
-                              type="email"
-                              class="input font-pixel"
-                              data-i18n-placeholder="enter_email"
-                              placeholder="your.email@school.edu"
-                              required
-                            />
-                        </div>
+  <div>
+    <label for="email">Email Address:</label>
+    <input type="email" id="email" name="email" placeholder="you@school.edu" />
+  </div>
 
-                        <div class="form-group" id="password-group" style="display: none;">
-                            <label for="password" class="label font-pixel">
-                                <span class="icon">🔒</span>
-                                <span data-i18n="password">Password</span> *
-                            </label>
-                            <input
-                              id="password"
-                              type="password"
-                              class="input font-pixel"
-                              data-i18n-placeholder="enter_password"
-                              placeholder="Enter your password"
-                            />
-                        </div>
+  <div id="passwordGroup">
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password" placeholder="Create a password" />
+  </div>
 
-                        <div class="form-group" id="grade-group">
-                            <label for="grade" class="label font-pixel">
-                                <span class="icon">🎓</span>
-                                <span data-i18n="grade_class">Grade/Class (Optional)</span>
-                            </label>
-                            <select id="grade" class="input font-pixel">
-                                <option value="" data-i18n="select_grade">Select your grade</option>
-                                <option value="6th" data-i18n="grade_6">6th Grade</option>
-                                <option value="7th" data-i18n="grade_7">7th Grade</option>
-                                <option value="8th" data-i18n="grade_8">8th Grade</option>
-                                <option value="9th" data-i18n="grade_9">9th Grade</option>
-                                <option value="10th" data-i18n="grade_10">10th Grade</option>
-                                <option value="11th" data-i18n="grade_11">11th Grade</option>
-                                <option value="12th" data-i18n="grade_12">12th Grade</option>
-                            </select>
-                        </div>
+  <div id="gradeGroup">
+    <label for="grade">Grade/Class (Optional):</label>
+    <select id="grade" name="grade">
+      <option value="">Select your grade</option>
+      <option value="6">6th Grade</option>
+      <option value="7">7th Grade</option>
+      <option value="8">8th Grade</option>
+      <option value="9">9th Grade</option>
+      <option value="10">10th Grade</option>
+      <option value="11">11th Grade</option>
+      <option value="12">12th Grade</option>
+    </select>
+  </div>
 
-                        <button type="submit" class="minecraft-button pulse-glow" id="submit-btn">
-                            <span data-i18n="register_btn">Register</span>
-                        </button>
+  <button type="submit" id="submitBtn">Register</button>
+</form>
 
-                        <button type="button" class="mode-toggle-btn font-pixel" id="mode-toggle" data-i18n="switch_to_login">
-                            Already have an account? Sign in
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
+<p style="text-align:center; margin-top: 15px;">
+  <button id="toggleModeBtn">Already have an account? Login</button>
+</p>
 
-        <!-- Server Homepage -->
-        <div id="server-homepage" class="homepage-container" style="display: none;">
-            <!-- Welcome Header -->
-            <div class="card minecraft-block welcome-header">
-                <div class="card-header">
-                    <div class="welcome-icon floating-animation">
-                        <div class="emerald-block"></div>
-                    </div>
-                    <h1 class="title font-minecraft" data-i18n="welcome_title">Welcome to SchoolCraft Server!</h1>
-                    <p class="subtitle font-pixel">
-                        <span data-i18n="welcome_message">Hey</span> <span id="username-display"></span>! <span data-i18n="ready_to_build">Ready to build and learn together?</span>
-                    </p>
-                </div>
-            </div>
+<div id="welcomeSection" class="hidden">
+  <h2>Welcome!</h2>
+  <p>You have successfully logged in. Welcome to the SchoolCraft Server.</p>
+</div>
 
-            <div class="grid">
-                <!-- Server Connection Info -->
-                <div class="card minecraft-block server-info">
-                    <div class="card-header">
-                        <h2 class="card-title font-minecraft">
-                            <span class="icon">🖥️</span>
-                            <span data-i18n="server_connection">Server Connection</span>
-                        </h2>
-                    </div>
-                    <div class="card-content">
-                        <div class="connection-box">
-                            <h3 class="font-pixel server-ip-label" data-i18n="server_ip">Server IP:</h3>
-                            <div class="ip-container">
-                                <code class="server-ip font-minecraft">schoolcraft.example.com</code>
-                                <button id="copy-ip" class="minecraft-button copy-btn">📋</button>
-                            </div>
+<div id="toast"></div>
 
-                            <div class="instructions font-pixel">
-                                <p><strong>1.</strong> <span data-i18n="step_1">Open Minecraft Java Edition</span></p>
-                                <p><strong>2.</strong> <span data-i18n="step_2">Click "Multiplayer"</span></p>
-                                <p><strong>3.</strong> <span data-i18n="step_3">Click "Add Server"</span></p>
-                                <p><strong>4.</strong> <span data-i18n="step_4">Paste the server IP above</span></p>
-                                <p><strong>5.</strong> <span data-i18n="step_5">Click "Done" and connect!</span></p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Server Status -->
-                <div class="card minecraft-block server-status">
-                    <div class="card-header">
-                        <h2 class="card-title font-minecraft">
-                            <span class="icon">👥</span>
-                            <span data-i18n="server_status">Server Status</span>
-                        </h2>
-                    </div>
-                    <div class="card-content">
-                        <div class="status-indicator">
-                            <div class="status-dot online"></div>
-                            <span class="status-badge font-pixel" data-i18n="online">Online</span>
-                        </div>
-
-                        <div class="player-count">
-                            <div class="count-text font-pixel">
-                                <span data-i18n="players_online">Players Online:</span>
-                                <span class="count"><span id="current-players">12</span>/<span id="max-players">50</span></span>
-                            </div>
-                            <div class="progress-bar">
-                                <div class="progress-fill" id="player-progress"></div>
-                            </div>
-                        </div>
-
-                        <div class="last-updated font-pixel">
-                            <span class="icon">🕒</span>
-                            <span data-i18n="updated">Updated</span> <span id="last-update-time"></span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="grid">
-                <!-- Server Rules -->
-                <div class="card minecraft-block server-rules">
-                    <div class="card-header">
-                        <h2 class="card-title font-minecraft">
-                            <span class="icon">🛡️</span>
-                            <span data-i18n="server_rules">Server Rules</span>
-                        </h2>
-                    </div>
-                    <div class="card-content">
-                        <ul class="rules-list font-pixel">
-                            <li><span class="rule-number">1.</span> <span data-i18n="rule_1">🏠 No griefing or destroying other players' builds</span></li>
-                            <li><span class="rule-number">2.</span> <span data-i18n="rule_2">💬 Keep chat friendly and respectful</span></li>
-                            <li><span class="rule-number">3.</span> <span data-i18n="rule_3">🤝 Help other students when they need it</span></li>
-                            <li><span class="rule-number">4.</span> <span data-i18n="rule_4">🎯 Stay in designated areas during class time</span></li>
-                            <li><span class="rule-number">5.</span> <span data-i18n="rule_5">🚫 No inappropriate builds or language</span></li>
-                            <li><span class="rule-number">6.</span> <span data-i18n="rule_6">📚 Educational projects take priority</span></li>
-                            <li><span class="rule-number">7.</span> <span data-i18n="rule_7">⚡ Ask permission before using redstone in shared areas</span></li>
-                            <li><span class="rule-number">8.</span> <span data-i18n="rule_8">🎮 Have fun and be creative!</span></li>
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- Discord & Community -->
-                <div class="card minecraft-block discord-card">
-                    <div class="card-header">
-                        <h2 class="card-title font-minecraft">
-                            <span class="icon">💬</span>
-                            <span data-i18n="join_community">Join Our Community</span>
-                        </h2>
-                    </div>
-                    <div class="card-content">
-                        <div class="discord-content">
-                            <div class="discord-icon">💬</div>
-                            <p class="font-pixel discord-description" data-i18n="discord_description">
-                                Connect with classmates, share builds, and get server updates!
-                            </p>
-                            <button id="discord-btn" class="minecraft-button discord-button">
-                                <span class="icon">🔗</span>
-                                <span data-i18n="join_discord">Join Discord Server</span>
-                            </button>
-                        </div>
-
-                        <div class="separator"></div>
-
-                        <div class="tips">
-                            <h4 class="font-pixel tips-title" data-i18n="quick_tips">Quick Tips:</h4>
-                            <ul class="tips-list font-pixel">
-                                <li data-i18n="tip_1">• Use /help for in-game commands</li>
-                                <li data-i18n="tip_2">• Ask staff for building permissions</li>
-                                <li data-i18n="tip_3">• Share screenshots in Discord!</li>
-                                <li data-i18n="tip_4">• Report issues to administrators</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Footer -->
-            <div class="card minecraft-block footer">
-                <div class="card-content">
-                    <p class="font-pixel footer-text">
-                        <span data-i18n="made_with">Made with</span> ❤️ <span data-i18n="for_school">for our school community</span>
-                    </p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Toast Container -->
-    <div id="toast-container"></div>
-
-    <script type="module" src="script.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
