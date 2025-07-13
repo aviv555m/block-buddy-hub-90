@@ -222,7 +222,7 @@ let currentPlayers = 12;
 let maxPlayers = 50;
 let isLoginMode = false;
 
-// Mock user database (used only for registration simulation)
+// Mock user database (only for simulation, SheetDB is the real database)
 let userDatabase = [
     {
         email: 'student@school.edu',
@@ -388,13 +388,10 @@ function toggleTheme() {
 }
 
 function updateServerStatus() {
-    // Here you might call a real API to get current players and status
-    // For now, we'll simulate:
     const onlinePlayersElement = document.getElementById('players-online');
     const serverStatusElement = document.getElementById('server-status');
     const lastUpdatedElement = document.getElementById('last-updated');
     
-    // Simulate player count changing
     currentPlayers = Math.min(maxPlayers, Math.max(0, currentPlayers + (Math.random() > 0.5 ? 1 : -1)));
     
     if (onlinePlayersElement) {
@@ -412,7 +409,6 @@ function updateServerStatus() {
     }
 }
 
-// Copy server IP to clipboard
 function copyServerIP() {
     const ip = 'mc.schoolcraft.edu';
     navigator.clipboard.writeText(ip).then(() => {
@@ -420,7 +416,6 @@ function copyServerIP() {
     });
 }
 
-// Toast notification
 function showToast(title, message, type) {
     const toast = document.getElementById('toast');
     toast.className = 'toast ' + type;
@@ -441,25 +436,7 @@ function handleAuth(event) {
     }
 }
 
-async function checkUserExists(email, minecraftUsername) {
-    try {
-        const response = await fetch('https://sheetdb.io/api/v1/6nrlyxofsg4sa');
-        if (!response.ok) {
-            throw new Error('Failed to fetch users for duplication check');
-        }
-        const users = await response.json();
-        return users.some(user => 
-            user.Email.toLowerCase() === email.toLowerCase() || 
-            user.MinecraftUsername.toLowerCase() === minecraftUsername.toLowerCase()
-        );
-    } catch (error) {
-        console.error('Error checking user existence:', error);
-        // Assume user does not exist if check fails (to not block registration)
-        return false;
-    }
-}
-
-async function handleRegistration() {
+function handleRegistration() {
     const minecraftUsername = document.getElementById('minecraft-username').value.trim();
     const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value.trim();
@@ -479,37 +456,31 @@ async function handleRegistration() {
     submitBtn.innerHTML = `<span>${translations[currentLanguage].creating_account}</span>`;
     submitBtn.disabled = true;
     
-    // Check if user already exists
-    const exists = await checkUserExists(email, minecraftUsername);
-    if (exists) {
-        showToast(
-            translations[currentLanguage].user_exists,
-            '',
-            'error'
+    // Check duplicates first
+    fetch('https://sheetdb.io/api/v1/6nrlyxofsg4sa')
+    .then(response => {
+        if (!response.ok) throw new Error('Failed to fetch users');
+        return response.json();
+    })
+    .then(users => {
+        const duplicate = users.find(user =>
+            user.Email.toLowerCase() === email.toLowerCase() ||
+            user.MinecraftUsername.toLowerCase() === minecraftUsername.toLowerCase()
         );
-        submitBtn.innerHTML = originalText;
-        submitBtn.disabled = false;
-        return;
-    }
-    
-    // Proceed to register
-    const newUser = {
-        minecraftUsername,
-        email,
-        password,
-        grade
-    };
-    
-    // Add to local mock DB
-    userDatabase.push(newUser);
-    userData = newUser;
-    
-    try {
-        const response = await fetch('https://sheetdb.io/api/v1/6nrlyxofsg4sa', {
+        if (duplicate) {
+            showToast(
+                'Error',
+                'User with this email or Minecraft username already exists.',
+                'error'
+            );
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+            throw new Error('Duplicate user');
+        }
+        // No duplicate, proceed with registration
+        return fetch('https://sheetdb.io/api/v1/6nrlyxofsg4sa', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 data: {
                     MinecraftUsername: minecraftUsername,
@@ -519,40 +490,36 @@ async function handleRegistration() {
                 }
             })
         });
+    })
+    .then(response => {
         if (!response.ok) throw new Error('Failed to save user data');
-        const data = await response.json();
-        console.log('User saved to SheetDB:', data);
-    } catch (error) {
-        console.error('Error saving to SheetDB:', error);
-        showToast('Error', 'Failed to save user data. Please try again later.', 'error');
+        return response.json();
+    })
+    .then(data => {
+        showToast(
+            translations[currentLanguage].registration_successful,
+            translations[currentLanguage].welcome_message_toast,
+            'success'
+        );
+        // Switch to login mode after registration
+        isLoginMode = true;
+        updateFormMode();
+        // Clear form inputs
+        document.getElementById('authForm').reset();
+    })
+    .catch(error => {
+        if (error.message !== 'Duplicate user') {
+            console.error('Registration error:', error);
+            showToast('Error', 'Registration failed. Please try again.', 'error');
+        }
+    })
+    .finally(() => {
         submitBtn.innerHTML = originalText;
         submitBtn.disabled = false;
-        return;
-    }
-    
-    showToast(
-        translations[currentLanguage].registration_successful,
-        translations[currentLanguage].welcome_message_toast,
-        'success'
-    );
-    
-    // Switch to login mode automatically after successful registration
-    setTimeout(() => {
-        toggleMode(); // Switch to login mode
-        clearFormFields();
-        submitBtn.innerHTML = originalText;
-        submitBtn.disabled = false;
-    }, 1500);
+    });
 }
 
-function clearFormFields() {
-    document.getElementById('minecraft-username').value = '';
-    document.getElementById('email').value = '';
-    document.getElementById('password').value = '';
-    document.getElementById('grade').value = '';
-}
-
-async function handleLogin() {
+function handleLogin() {
     const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value.trim();
     
@@ -570,11 +537,12 @@ async function handleLogin() {
     submitBtn.innerHTML = `<span>${translations[currentLanguage].signing_in}</span>`;
     submitBtn.disabled = true;
     
-    try {
-        const response = await fetch('https://sheetdb.io/api/v1/6nrlyxofsg4sa');
-        if (!response.ok) throw new Error('Failed to fetch user data');
-        const users = await response.json();
-        
+    fetch('https://sheetdb.io/api/v1/6nrlyxofsg4sa')
+    .then(response => {
+        if (!response.ok) throw new Error('Failed to fetch users');
+        return response.json();
+    })
+    .then(users => {
         const foundUser = users.find(user => 
             user.Email.toLowerCase() === email.toLowerCase() &&
             user.Password === password
@@ -597,17 +565,19 @@ async function handleLogin() {
                 'error'
             );
         }
-    } catch (error) {
+    })
+    .catch(error => {
         console.error('Login error:', error);
         showToast(
             'Error',
             'Unable to login at this time. Please try again later.',
             'error'
         );
-    } finally {
+    })
+    .finally(() => {
         submitBtn.innerHTML = originalText;
         submitBtn.disabled = false;
-    }
+    });
 }
 
 function showHomepage() {
@@ -621,8 +591,6 @@ function showHomepage() {
     
     welcomeTitle.textContent = translations[currentLanguage].welcome_title;
     welcomeMsg.textContent = `${translations[currentLanguage].welcome_message} ${userData.minecraftUsername || userData.MinecraftUsername || ''}! ${translations[currentLanguage].ready_to_build}`;
-    
-    // Display server IP and status info (already updated periodically)
 }
 
 // Initialize form mode and translations on page load
