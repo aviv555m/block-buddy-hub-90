@@ -253,9 +253,11 @@ function App() {
     }
 
     setIsLoading(true);
+    console.log('Starting registration for:', email);
     
     try {
       const redirectUrl = `${window.location.origin}/`;
+      console.log('Using redirect URL:', redirectUrl);
       
       const { data, error } = await supabase.auth.signUp({
         email: email,
@@ -270,6 +272,8 @@ function App() {
         }
       });
 
+      console.log('Registration response:', { data, error });
+
       if (error) {
         console.error('Registration error:', error);
         toast({
@@ -278,11 +282,21 @@ function App() {
           variant: "destructive",
         });
       } else if (data.user) {
-        toast({
-          title: translations[currentLanguage].registration_successful,
-          description: translations[currentLanguage].welcome_message_toast,
-        });
         console.log('Registration successful for:', data.user.email);
+        
+        if (data.user.email_confirmed_at) {
+          // User is immediately confirmed
+          toast({
+            title: translations[currentLanguage].registration_successful,
+            description: translations[currentLanguage].welcome_message_toast,
+          });
+        } else {
+          // User needs to confirm email
+          toast({
+            title: "Check Your Email",
+            description: "Please check your email and click the confirmation link to complete registration.",
+          });
+        }
       }
     } catch (error) {
       console.error('Registration error:', error);
