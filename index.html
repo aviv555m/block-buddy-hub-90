@@ -1,13 +1,19 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title data-i18n="title">SchoolCraft Server - Join Our Minecraft World</title>
-    <meta name="description" content="Register to join our school Minecraft server - A safe, educational, and fun gaming environment for students">
-    
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.js" rel="stylesheet">
+    <meta
+      name="description"
+      content="Register to join our school Minecraft server - A safe, educational, and fun gaming environment for students"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Orbitron:wght@400;700;900&display=swap"
+      rel="stylesheet"
+    />
+    <link href="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.js" rel="stylesheet" />
+  <script type="module" crossorigin src="/block-buddy-hub-90/assets/index-D5Xmb1Dz.js"></script>
   <link rel="stylesheet" crossorigin href="/block-buddy-hub-90/assets/index-4VIXI0YK.css">
 </head>
 <body class="light-theme">
@@ -34,7 +40,7 @@
                     <h1 class="title font-minecraft" data-i18n="join_server">Join SchoolCraft Server</h1>
                     <p class="subtitle font-pixel" data-i18n="register_description">Register to access our educational Minecraft world</p>
                 </div>
-                
+
                 <div class="card-content">
                     <form id="authForm" class="form">
                         <div class="form-group" id="username-group">
@@ -42,7 +48,13 @@
                                 <span class="icon">👤</span>
                                 <span data-i18n="minecraft_username">Minecraft Username</span> *
                             </label>
-                            <input id="minecraft-username" type="text" class="input font-pixel" data-i18n-placeholder="enter_minecraft_username" placeholder="Enter your Minecraft username">
+                            <input
+                              id="minecraft-username"
+                              type="text"
+                              class="input font-pixel"
+                              data-i18n-placeholder="enter_minecraft_username"
+                              placeholder="Enter your Minecraft username"
+                            />
                         </div>
 
                         <div class="form-group">
@@ -50,7 +62,14 @@
                                 <span class="icon">✉️</span>
                                 <span data-i18n="email_address">Email Address</span> *
                             </label>
-                            <input id="email" type="email" class="input font-pixel" data-i18n-placeholder="enter_email" placeholder="your.email@school.edu" required>
+                            <input
+                              id="email"
+                              type="email"
+                              class="input font-pixel"
+                              data-i18n-placeholder="enter_email"
+                              placeholder="your.email@school.edu"
+                              required
+                            />
                         </div>
 
                         <div class="form-group" id="password-group" style="display: none;">
@@ -58,7 +77,13 @@
                                 <span class="icon">🔒</span>
                                 <span data-i18n="password">Password</span> *
                             </label>
-                            <input id="password" type="password" class="input font-pixel" data-i18n-placeholder="enter_password" placeholder="Enter your password">
+                            <input
+                              id="password"
+                              type="password"
+                              class="input font-pixel"
+                              data-i18n-placeholder="enter_password"
+                              placeholder="Enter your password"
+                            />
                         </div>
 
                         <div class="form-group" id="grade-group">
@@ -81,7 +106,7 @@
                         <button type="submit" class="minecraft-button pulse-glow" id="submit-btn">
                             <span data-i18n="register_btn">Register</span>
                         </button>
-                        
+
                         <button type="button" class="mode-toggle-btn font-pixel" id="mode-toggle" data-i18n="switch_to_login">
                             Already have an account? Sign in
                         </button>
@@ -121,7 +146,7 @@
                                 <code class="server-ip font-minecraft">schoolcraft.example.com</code>
                                 <button id="copy-ip" class="minecraft-button copy-btn">📋</button>
                             </div>
-                            
+
                             <div class="instructions font-pixel">
                                 <p><strong>1.</strong> <span data-i18n="step_1">Open Minecraft Java Edition</span></p>
                                 <p><strong>2.</strong> <span data-i18n="step_2">Click "Multiplayer"</span></p>
@@ -146,7 +171,7 @@
                             <div class="status-dot online"></div>
                             <span class="status-badge font-pixel" data-i18n="online">Online</span>
                         </div>
-                        
+
                         <div class="player-count">
                             <div class="count-text font-pixel">
                                 <span data-i18n="players_online">Players Online:</span>
@@ -236,7 +261,6 @@
 
     <!-- Toast Container -->
     <div id="toast-container"></div>
-
-    <script src="script.js"></script>
+
 </body>
 </html>
