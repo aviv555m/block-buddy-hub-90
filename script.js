@@ -40,7 +40,7 @@ function updateFormMode() {
   }
   clearForm();
   welcomeSection.classList.add('hidden');
-  authForm.style.display = 'block';
+  authForm.style.display = 'flex';
   toggleModeBtn.style.display = 'inline-block';
   formTitle.style.display = 'block';
 }
@@ -77,10 +77,11 @@ async function registerUser() {
     if (!response.ok) throw new Error('Could not fetch users.');
     const users = await response.json();
 
-    // Check duplicates by email or minecraft username
+    // SheetDB returns an array where each user object has a "data" property
+    // Adjust the check accordingly:
     const duplicateUser = users.find(user =>
-      user.Email.toLowerCase() === email || 
-      user.MinecraftUsername.toLowerCase() === minecraftUsername.toLowerCase()
+      (user.data.Email?.trim().toLowerCase() === email) ||
+      (user.data.MinecraftUsername?.trim().toLowerCase() === minecraftUsername.toLowerCase())
     );
 
     if (duplicateUser) {
@@ -138,10 +139,10 @@ async function loginUser() {
     if (!response.ok) throw new Error('Could not fetch users.');
     const users = await response.json();
 
-    // Find user with matching email and password
+    // Adjust for SheetDB data structure: user.data.Email etc.
     const user = users.find(u =>
-      u.Email.toLowerCase() === email &&
-      u.Password === password
+      u.data.Email?.trim().toLowerCase() === email &&
+      u.data.Password?.trim() === password
     );
 
     if (!user) {
@@ -152,7 +153,7 @@ async function loginUser() {
     }
 
     // Successful login
-    showToast(`Welcome back, ${user.MinecraftUsername}!`, 4000);
+    showToast(`Welcome back, ${user.data.MinecraftUsername}!`, 4000);
 
     // Hide form and show welcome message
     authForm.style.display = 'none';
