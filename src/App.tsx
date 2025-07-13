@@ -105,7 +105,8 @@ function App() {
 
   const fetchUserProfile = async (userId: string) => {
     try {
-      const { data, error } = await supabase
+      // Use generic query to bypass type constraints until Supabase types are updated
+      const { data, error } = await (supabase as any)
         .from('profiles')
         .select('*')
         .eq('id', userId)
@@ -116,8 +117,10 @@ function App() {
         return;
       }
 
-      setUserProfile(data);
-      console.log('User profile loaded:', data);
+      if (data) {
+        setUserProfile(data as UserProfile);
+        console.log('User profile loaded:', data);
+      }
     } catch (error) {
       console.error('Error fetching profile:', error);
     }
