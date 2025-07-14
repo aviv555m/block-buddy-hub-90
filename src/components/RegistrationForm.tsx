@@ -97,20 +97,20 @@ const RegistrationForm = ({ onRegistrationComplete }: RegistrationFormProps) => 
 
     setIsSubmitting(true);
     
-    // Simulate registration/login process
-    setTimeout(() => {
+    try {
       if (isLoginMode) {
-        // Check credentials (mock)
-        if (formData.email === 'student@school.edu' && formData.password === 'password123') {
+        // For login, we need to fetch from SheetDB to check credentials
+        const response = await fetch('https://sheetdb.io/api/v1/6nrlyxofsg4sa');
+        const users = await response.json();
+        
+        const user = users.find((u: any) => u.email === formData.email && u.password === formData.password);
+        
+        if (user) {
           toast({
             title: "Login Successful! 🎉",
             description: "Welcome back to PicHunter Server!",
           });
-          onRegistrationComplete({
-            fullName: 'Test Student',
-            minecraftNickname: 'TestPlayer',
-            email: formData.email
-          });
+          onRegistrationComplete(user);
         } else {
           toast({
             title: "Login Failed",
@@ -119,29 +119,48 @@ const RegistrationForm = ({ onRegistrationComplete }: RegistrationFormProps) => 
           });
         }
       } else {
-        // Registration
-        toast({
-          title: "Registration Successful! 🎉",
-          description: "Welcome to PicHunter Server! You can now join the server.",
-        });
-        
-        // Save user data (in real app, this would go to backend)
+        // Registration - Save to SheetDB
         const userData = {
-          ...formData,
+          fullName: formData.fullName,
+          age: formData.age,
+          class: formData.class,
+          minecraftNickname: formData.minecraftNickname,
+          email: formData.email,
+          password: formData.password,
           registeredAt: new Date().toISOString(),
           id: Date.now().toString()
         };
         
-        // Store in localStorage for demo purposes
-        const existingUsers = JSON.parse(localStorage.getItem('serverUsers') || '[]');
-        existingUsers.push(userData);
-        localStorage.setItem('serverUsers', JSON.stringify(existingUsers));
+        const response = await fetch('https://sheetdb.io/api/v1/6nrlyxofsg4sa', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            data: [userData]
+          })
+        });
         
-        onRegistrationComplete(userData);
+        if (response.ok) {
+          toast({
+            title: "Registration Successful! 🎉",
+            description: "Welcome to PicHunter Server! You can now join the server.",
+          });
+          onRegistrationComplete(userData);
+        } else {
+          throw new Error('Failed to save data');
+        }
       }
-      
+    } catch (error) {
+      console.error('Error:', error);
+      toast({
+        title: "Error",
+        description: isLoginMode ? "Failed to login. Please try again." : "Failed to register. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
       setIsSubmitting(false);
-    }, 2000);
+    }
   };
 
   const handleInputChange = (field: string, value: string) => {
