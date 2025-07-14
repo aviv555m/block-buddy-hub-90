@@ -99,9 +99,14 @@ const RegistrationForm = ({ onRegistrationComplete }: RegistrationFormProps) => 
     
     try {
       if (isLoginMode) {
-        // For login, we need to fetch from SheetDB to check credentials
+        // For login, fetch from SheetDB to check credentials
         const response = await fetch('https://sheetdb.io/api/v1/6nrlyxofsg4sa');
+        if (!response.ok) {
+          throw new Error('Failed to fetch user data');
+        }
+        
         const users = await response.json();
+        console.log('Fetched users for login:', users);
         
         const user = users.find((u: any) => u.email === formData.email && u.password === formData.password);
         
@@ -119,11 +124,44 @@ const RegistrationForm = ({ onRegistrationComplete }: RegistrationFormProps) => 
           });
         }
       } else {
-        // Registration - Save to SheetDB
+        // Registration - First check for existing users
+        const checkResponse = await fetch('https://sheetdb.io/api/v1/6nrlyxofsg4sa');
+        if (!checkResponse.ok) {
+          throw new Error('Failed to check existing users');
+        }
+        
+        const existingUsers = await checkResponse.json();
+        console.log('Existing users:', existingUsers);
+        
+        // Check for duplicate email
+        const emailExists = existingUsers.some((user: any) => user.email === formData.email);
+        if (emailExists) {
+          toast({
+            title: "Registration Failed",
+            description: "An account with this email already exists.",
+            variant: "destructive",
+          });
+          setIsSubmitting(false);
+          return;
+        }
+        
+        // Check for duplicate minecraft username
+        const usernameExists = existingUsers.some((user: any) => user.minecraftNickname === formData.minecraftNickname);
+        if (usernameExists) {
+          toast({
+            title: "Registration Failed",
+            description: "This Minecraft username is already taken.",
+            variant: "destructive",
+          });
+          setIsSubmitting(false);
+          return;
+        }
+        
+        // Save to SheetDB
         const userData = {
           fullName: formData.fullName,
           age: formData.age,
-          class: formData.class,
+          class: formData.class || '',
           minecraftNickname: formData.minecraftNickname,
           email: formData.email,
           password: formData.password,
@@ -131,15 +169,19 @@ const RegistrationForm = ({ onRegistrationComplete }: RegistrationFormProps) => 
           id: Date.now().toString()
         };
         
+        console.log('Sending userData to SheetDB:', userData);
+        
         const response = await fetch('https://sheetdb.io/api/v1/6nrlyxofsg4sa', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({
-            data: [userData]
-          })
+          body: JSON.stringify(userData)
         });
+        
+        console.log('SheetDB response status:', response.status);
+        const responseData = await response.text();
+        console.log('SheetDB response data:', responseData);
         
         if (response.ok) {
           toast({
@@ -148,7 +190,7 @@ const RegistrationForm = ({ onRegistrationComplete }: RegistrationFormProps) => 
           });
           onRegistrationComplete(userData);
         } else {
-          throw new Error('Failed to save data');
+          throw new Error(`Failed to save data: ${responseData}`);
         }
       }
     } catch (error) {
