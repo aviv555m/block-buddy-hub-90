@@ -305,7 +305,7 @@ const RegistrationForm = ({ onRegistrationComplete }: RegistrationFormProps) => 
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="w-full minecraft-button animate-pulse-glow"
+              className="w-full bg-minecraft-grass hover:bg-minecraft-grass/90 text-white font-minecraft text-sm px-6 py-3 transition-all duration-200 hover:scale-105 active:scale-95 border-2 border-minecraft-dirt shadow-lg"
             >
               {isSubmitting ? 
                 (isLoginMode ? 'Signing In...' : 'Creating Account...') : 
@@ -317,7 +317,7 @@ const RegistrationForm = ({ onRegistrationComplete }: RegistrationFormProps) => 
               type="button"
               variant="ghost"
               onClick={() => setIsLoginMode(!isLoginMode)}
-              className="w-full font-pixel text-minecraft-dark/80 hover:text-minecraft-dark"
+              className="w-full font-pixel text-minecraft-dark/80 hover:text-minecraft-dark hover:bg-minecraft-grass/10"
             >
               {isLoginMode ? "Don't have an account? Register" : "Already have an account? Sign In"}
             </Button>
