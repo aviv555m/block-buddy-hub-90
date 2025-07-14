@@ -91,6 +91,7 @@ const RegistrationForm = ({ onRegistrationComplete }: RegistrationFormProps) => 
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
+    console.log('Form submitted!', { formData, isLoginMode });
     e.preventDefault();
     
     if (!validateForm()) return;
@@ -358,7 +359,10 @@ const RegistrationForm = ({ onRegistrationComplete }: RegistrationFormProps) => 
             <Button
               type="button"
               variant="ghost"
-              onClick={() => setIsLoginMode(!isLoginMode)}
+              onClick={() => {
+                console.log('Toggle button clicked!');
+                setIsLoginMode(!isLoginMode);
+              }}
               className="w-full font-pixel text-minecraft-dark/80 hover:text-minecraft-dark hover:bg-minecraft-grass/10"
             >
               {isLoginMode ? "Don't have an account? Register" : "Already have an account? Sign In"}
