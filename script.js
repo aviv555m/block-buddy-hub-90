@@ -283,7 +283,7 @@ function setupEventListeners() {
     const discordBtn = document.getElementById('discord-btn');
     if (discordBtn) {
         discordBtn.addEventListener('click', function() {
-            window.open('https://discord.gg/schoolcraft', '_blank');
+            window.open('https://discord.gg/NFgEE8gvGd', '_blank');
         });
     }
 }
