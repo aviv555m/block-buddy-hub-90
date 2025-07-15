@@ -62,11 +62,7 @@ const ServerHomepage = ({ userData }: ServerHomepageProps) => {
   };
 
   const handleAdminPanelAccess = () => {
-    // Check if user has admin email
-    const adminEmails = ['avivm0900@gmail.com', 'admin@test.com'];
-    const isAdmin = adminEmails.includes(userData.email);
-    
-    if (isAdmin) {
+    if (userData.is_admin) {
       setShowAdminPanel(true);
     } else {
       toast({
@@ -124,26 +120,22 @@ const ServerHomepage = ({ userData }: ServerHomepageProps) => {
               Welcome to PicHunter Server!
             </CardTitle>
             <CardDescription className="text-lg text-gray-600 dark:text-gray-300">
-              Hey {userData.minecraftNickname || userData.fullName || userData.email}! Ready to build and learn together?
-              {(() => {
-                const adminEmails = ['avivm0900@gmail.com', 'admin@test.com'];
-                const isAdmin = adminEmails.includes(userData.email);
-                return isAdmin && (
-                  <div className="mt-2">
-                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-100">
-                      <Shield size={12} className="mr-1" />
-                      Admin Access
-                    </span>
-                  </div>
-                );
-              })()}
+              Hey {userData.minecraft_username || userData.full_name || userData.email}! Ready to build and learn together?
+              {userData.is_admin && (
+                <div className="mt-2">
+                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-100">
+                    <Shield size={12} className="mr-1" />
+                    Admin Access
+                  </span>
+                </div>
+              )}
             </CardDescription>
             
             {/* Debug Info */}
             <div className="mt-4 p-2 bg-gray-100 dark:bg-gray-700 rounded text-xs">
               <p>Debug: Email: {userData.email}</p>
-              <p>Debug: Is Admin: {['avivm0900@gmail.com', 'admin@test.com'].includes(userData.email).toString()}</p>
-              <p>Debug: Username: {userData.minecraftNickname || userData.fullName}</p>
+              <p>Debug: Is Admin: {userData.is_admin?.toString()}</p>
+              <p>Debug: Username: {userData.minecraft_username || userData.full_name}</p>
             </div>
             
             {/* Action Buttons */}
@@ -165,7 +157,7 @@ const ServerHomepage = ({ userData }: ServerHomepageProps) => {
               </Button>
             </div>
             <p className="text-xs text-gray-500 mt-1">
-              Click to access admin panel (admin email required)
+              {userData.is_admin ? "You have admin access" : "Admin access required for admin panel"}
             </p>
           </CardHeader>
         </Card>

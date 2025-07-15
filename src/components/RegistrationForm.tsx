@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { User, Mail, GraduationCap, Calendar, Shield } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 interface RegistrationFormProps {
   onRegistrationComplete: (userData: any) => void;
@@ -100,102 +101,115 @@ const RegistrationForm = ({ onRegistrationComplete }: RegistrationFormProps) => 
     
     try {
       if (isLoginMode) {
-        // For login, fetch from SheetDB to check credentials
-        const response = await fetch('https://sheetdb.io/api/v1/6nrlyxofsg4sa');
-        if (!response.ok) {
-          throw new Error('Failed to fetch user data');
-        }
-        
-        const users = await response.json();
-        console.log('Fetched users for login:', users);
-        
-        const user = users.find((u: any) => u.email === formData.email && u.password === formData.password);
-        
-        if (user) {
-          toast({
-            title: "Login Successful! 🎉",
-            description: "Welcome back to PicHunter Server!",
-          });
-          onRegistrationComplete(user);
-        } else {
-          toast({
-            title: "Login Failed",
-            description: "Invalid email or password.",
-            variant: "destructive",
-          });
-        }
-      } else {
-        // Registration - First check for existing users
-        const checkResponse = await fetch('https://sheetdb.io/api/v1/6nrlyxofsg4sa');
-        if (!checkResponse.ok) {
-          throw new Error('Failed to check existing users');
-        }
-        
-        const existingUsers = await checkResponse.json();
-        console.log('Existing users:', existingUsers);
-        
-        // Check for duplicate email
-        const emailExists = existingUsers.some((user: any) => user.email === formData.email);
-        if (emailExists) {
-          toast({
-            title: "Registration Failed",
-            description: "An account with this email already exists.",
-            variant: "destructive",
-          });
-          setIsSubmitting(false);
-          return;
-        }
-        
-        // Check for duplicate minecraft username
-        const usernameExists = existingUsers.some((user: any) => user.minecraftNickname === formData.minecraftNickname);
-        if (usernameExists) {
-          toast({
-            title: "Registration Failed",
-            description: "This Minecraft username is already taken.",
-            variant: "destructive",
-          });
-          setIsSubmitting(false);
-          return;
-        }
-        
-        // Save to SheetDB
-        const userData = {
-          fullName: formData.fullName,
-          age: formData.age,
-          class: formData.class || '',
-          minecraftNickname: formData.minecraftNickname,
+        // Login with Supabase
+        const { data, error } = await supabase.auth.signInWithPassword({
           email: formData.email,
           password: formData.password,
-          registeredAt: new Date().toISOString(),
-          id: Date.now().toString(),
-          isAdmin: formData.email === 'avivm0900@gmail.com' || formData.email === 'admin@test.com'
-        };
-        
-        console.log('Sending userData to SheetDB:', userData);
-        
-        const response = await fetch('https://sheetdb.io/api/v1/6nrlyxofsg4sa', {
-          method: 'POST',
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            data: [userData]
-          })
         });
-        
-        console.log('SheetDB response status:', response.status);
-        const responseData = await response.text();
-        console.log('SheetDB response data:', responseData);
-        
-        if (response.ok) {
+
+        if (error) {
           toast({
-            title: "Registration Successful! 🎉",
-            description: "Welcome to PicHunter Server! You can now join the server.",
+            title: "Login Failed",
+            description: error.message,
+            variant: "destructive",
           });
-          onRegistrationComplete(userData);
-        } else {
-          throw new Error(`Failed to save data: ${responseData}`);
+        } else if (data.user) {
+          // Fetch user profile
+          const { data: profile, error: profileError } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', data.user.id)
+            .single();
+
+          if (profileError) {
+            console.error('Profile fetch error:', profileError);
+            toast({
+              title: "Profile Error",
+              description: "Failed to load user profile.",
+              variant: "destructive",
+            });
+          } else {
+            toast({
+              title: "Login Successful! 🎉",
+              description: "Welcome back to PicHunter Server!",
+            });
+            onRegistrationComplete(profile);
+          }
+        }
+      } else {
+        // Registration with Supabase
+        const { data, error } = await supabase.auth.signUp({
+          email: formData.email,
+          password: formData.password,
+          options: {
+            emailRedirectTo: `${window.location.origin}/`,
+            data: {
+              full_name: formData.fullName,
+              minecraft_username: formData.minecraftNickname,
+              grade: formData.class || '',
+            }
+          }
+        });
+
+        if (error) {
+          toast({
+            title: "Registration Failed",
+            description: error.message,
+            variant: "destructive",
+          });
+        } else if (data.user) {
+          // Check if user needs email confirmation
+          if (!data.session) {
+            toast({
+              title: "Registration Successful! 📧",
+              description: "Please check your email to confirm your account.",
+            });
+          } else {
+            // User is automatically logged in, fetch their profile
+            const { data: profile, error: profileError } = await supabase
+              .from('profiles')
+              .select('*')
+              .eq('id', data.user.id)
+              .single();
+
+            if (profileError) {
+              console.error('Profile fetch error:', profileError);
+              // Create profile manually if it doesn't exist
+              const { data: newProfile, error: insertError } = await supabase
+                .from('profiles')
+                .insert({
+                  id: data.user.id,
+                  email: formData.email,
+                  full_name: formData.fullName,
+                  minecraft_username: formData.minecraftNickname,
+                  grade: formData.class || '',
+                  is_admin: ['avivm0900@gmail.com', 'admin@test.com'].includes(formData.email)
+                })
+                .select()
+                .single();
+
+              if (insertError) {
+                console.error('Profile creation error:', insertError);
+                toast({
+                  title: "Profile Error",
+                  description: "Failed to create user profile.",
+                  variant: "destructive",
+                });
+              } else {
+                toast({
+                  title: "Registration Successful! 🎉",
+                  description: "Welcome to PicHunter Server! You can now join the server.",
+                });
+                onRegistrationComplete(newProfile);
+              }
+            } else {
+              toast({
+                title: "Registration Successful! 🎉",
+                description: "Welcome to PicHunter Server! You can now join the server.",
+              });
+              onRegistrationComplete(profile);
+            }
+          }
         }
       }
     } catch (error) {
