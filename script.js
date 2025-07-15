@@ -525,14 +525,14 @@ function showHomepage() {
     const discordBtn = document.getElementById('discord-btn');
     if (discordBtn && !discordBtn.hasAttribute('data-listener')) {
         discordBtn.addEventListener('click', function() {
-            window.open('https://discord.gg/schoolcraft', '_blank');
+            window.open('https://discord.gg/NFgEE8gvGd', '_blank');
         });
         discordBtn.setAttribute('data-listener', 'true');
     }
 }
 
 function copyServerIP() {
-    const serverIP = 'schoolcraft.example.com';
+    const serverIP = 'mode-pichunter.joinmc.link';
     
     navigator.clipboard.writeText(serverIP).then(() => {
         showToast(
