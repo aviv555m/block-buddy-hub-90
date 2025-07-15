@@ -180,7 +180,7 @@ const RegistrationForm = ({ onRegistrationComplete }: RegistrationFormProps) => 
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            data: userData
+            data: [userData]
           })
         });
         
