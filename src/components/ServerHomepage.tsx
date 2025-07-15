@@ -120,7 +120,7 @@ const ServerHomepage = ({ userData }: ServerHomepageProps) => {
               Welcome to PicHunter Server!
             </CardTitle>
             <CardDescription className="text-lg text-gray-600 dark:text-gray-300">
-              Hey {userData.minecraftUsername || userData.fullName || userData.email}! Ready to build and learn together?
+              Hey {userData.minecraftNickname || userData.fullName || userData.email}! Ready to build and learn together?
               {userData.isAdmin && (
                 <div className="mt-2">
                   <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-100">
@@ -135,7 +135,7 @@ const ServerHomepage = ({ userData }: ServerHomepageProps) => {
             <div className="mt-4 p-2 bg-gray-100 dark:bg-gray-700 rounded text-xs">
               <p>Debug: Email: {userData.email}</p>
               <p>Debug: Is Admin: {userData.isAdmin?.toString()}</p>
-              <p>Debug: Username: {userData.minecraftUsername || userData.fullName}</p>
+              <p>Debug: Username: {userData.minecraftNickname || userData.fullName}</p>
             </div>
             
             {/* Action Buttons */}

@@ -167,7 +167,8 @@ const RegistrationForm = ({ onRegistrationComplete }: RegistrationFormProps) => 
           email: formData.email,
           password: formData.password,
           registeredAt: new Date().toISOString(),
-          id: Date.now().toString()
+          id: Date.now().toString(),
+          isAdmin: formData.email === 'avivm0900@gmail.com' || formData.email === 'admin@test.com'
         };
         
         console.log('Sending userData to SheetDB:', userData);
@@ -175,9 +176,12 @@ const RegistrationForm = ({ onRegistrationComplete }: RegistrationFormProps) => 
         const response = await fetch('https://sheetdb.io/api/v1/6nrlyxofsg4sa', {
           method: 'POST',
           headers: {
+            'Accept': 'application/json',
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(userData)
+          body: JSON.stringify({
+            data: userData
+          })
         });
         
         console.log('SheetDB response status:', response.status);
