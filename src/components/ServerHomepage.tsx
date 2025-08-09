@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Copy, Users, Clock, MessageCircle, Shield, BookOpen, Settings, LogOut } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import AdminPanel from './AdminPanel';
+import { useNavigate } from 'react-router-dom';
 
 interface ServerHomepageProps {
   userData: any;
@@ -29,6 +29,7 @@ const ServerHomepage = ({ userData }: ServerHomepageProps) => {
     ]
   });
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Load server settings
@@ -62,15 +63,7 @@ const ServerHomepage = ({ userData }: ServerHomepageProps) => {
   };
 
   const handleAdminPanelAccess = () => {
-    if (userData.is_admin) {
-      setShowAdminPanel(true);
-    } else {
-      toast({
-        title: "Access Denied",
-        description: "You don't have admin permissions to access this panel.",
-        variant: "destructive",
-      });
-    }
+    navigate('/admin');
   };
 
   const handleLogout = async () => {
@@ -103,9 +96,6 @@ const ServerHomepage = ({ userData }: ServerHomepageProps) => {
     localStorage.setItem('serverSettings', JSON.stringify(newSettings));
   };
 
-  if (showAdminPanel) {
-    return <AdminPanel onLogout={handleAdminLogout} onSettingsUpdate={handleServerSettingsUpdate} serverSettings={serverSettings} />;
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-sky-200 via-green-100 to-amber-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-700 p-4">
