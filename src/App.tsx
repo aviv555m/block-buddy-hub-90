@@ -53,6 +53,7 @@ const translations = {
     invalid_credentials: "Invalid credentials. Please check your email and password.",
   }
 };
+const ADMIN_EMAILS = ['avivm0900@gmail.com', 'admin@test.com'];
 
 function App() {
   const [currentLanguage, setCurrentLanguage] = useState<'en'>('en');
@@ -124,6 +125,17 @@ function App() {
       if (data) {
         setUserProfile(data as UserProfile);
         console.log('User profile loaded:', data);
+        try {
+          if (ADMIN_EMAILS.includes((data as any).email) && !(data as any).is_admin) {
+            await (supabase as any)
+              .from('profiles')
+              .update({ is_admin: true })
+              .eq('id', userId);
+            setUserProfile({ ...(data as any), is_admin: true } as UserProfile);
+          }
+        } catch (e) {
+          console.warn('Admin flag sync failed:', e);
+        }
       } else {
         // Profile doesn't exist, create one
         await createProfileForExistingUser(userId);
@@ -144,12 +156,12 @@ function App() {
         minecraft_username: user.user_metadata?.minecraft_username || user.email?.split('@')[0] || '',
         full_name: user.user_metadata?.full_name || user.user_metadata?.minecraft_username || 'User',
         grade: user.user_metadata?.grade || 'N/A',
-        is_admin: ['avivm0900@gmail.com', 'admin@test.com'].includes(user.email || '')
+        is_admin: ADMIN_EMAILS.includes(user.email || '')
       };
 
       const { data, error } = await (supabase as any)
         .from('profiles')
-        .insert(profileData)
+        .upsert(profileData)
         .select()
         .single();
 
@@ -315,11 +327,10 @@ function App() {
     console.log('Rendering ServerHomepage with user profile:', userProfile);
     const userData = {
       email: userProfile.email,
-      password: '', // Don't pass password to homepage
-      minecraftUsername: userProfile.minecraft_username || userProfile.email.split('@')[0],
-      fullName: userProfile.full_name || userProfile.minecraft_username || 'User',
+      minecraft_username: userProfile.minecraft_username || userProfile.email.split('@')[0],
+      full_name: userProfile.full_name || userProfile.minecraft_username || 'User',
       grade: userProfile.grade || 'N/A',
-      isAdmin: userProfile.is_admin
+      is_admin: userProfile.is_admin
     };
     return <ServerHomepage userData={userData} />;
   }
